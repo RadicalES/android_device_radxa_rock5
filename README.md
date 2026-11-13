@@ -19,8 +19,8 @@ does for the Raspberry Pi. raspberry-vanilla's `device/brcm/rpi5` tree is the st
 ## Milestones
 
 1. **Boot to Android home screen** over HDMI, shell on the debug UART, booting from microSD.
-   - [ ] Mainline U-Boot (+ TF-A) builds
-   - [ ] Mainline kernel builds with Android + board config (`kernel/`)
+   - [x] Mainline U-Boot (+ TF-A) builds
+   - [x] Mainline kernel builds with Android + board config (`kernel/`)
    - [ ] U-Boot boots the kernel on hardware
    - [ ] Device tree (`device/radxa/rock5`), ramdisk, fstab, image script
    - [ ] Mesa Panfrost + minigbm + drm_hwcomposer → SurfaceFlinger up
@@ -45,6 +45,7 @@ rock5b/                     ROCK 5B: BoardConfig.mk (picks the DTB), device.mk, 
 bootloader/build-uboot.sh   mainline U-Boot + TF-A BL31 (+ rkbin DDR blob) -> u-boot-rockchip.bin
 kernel/build-kernel.sh      mainline LTS kernel built with AOSP clang
 kernel/rock5.config         board config fragment, merged over defconfig + AOSP android-base.config
+tools/mksdcard-kernel-test.sh  SD image with U-Boot + kernel + DTB only, for kernel bring-up
 ```
 
 The fstab mounts by GPT partition name, and `androidboot.boot_devices` says which controller holds them
