@@ -1,0 +1,2 @@
+# GPU (Panthor) and display
+/dev/dri/*                0666   system     graphics

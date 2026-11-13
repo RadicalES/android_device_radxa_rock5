@@ -1,0 +1,8 @@
+on init
+    symlink /sdcard /storage/sdcard0
+
+on fs
+    mount_all /vendor/etc/fstab.rock5 --early
+
+on late-fs
+    mount_all /vendor/etc/fstab.rock5 --late

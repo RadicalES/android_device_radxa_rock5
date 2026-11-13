@@ -1,0 +1,8 @@
+# Android fstab file.
+# Partitions are found by GPT name on the device named by androidboot.boot_devices.
+
+#<src>                        <mnt_point>  <type>  <mnt_flags and options>            <fs_mgr_flags>
+/dev/block/by-name/system     /system      ext4    ro,barrier=1                       wait,first_stage_mount
+/dev/block/by-name/vendor     /vendor      ext4    ro,barrier=1                       wait,first_stage_mount
+/dev/block/by-name/metadata   /metadata    ext4    nodev,noatime,nosuid               wait,check,formattable,first_stage_mount
+/dev/block/by-name/userdata   /data        ext4    nodev,noatime,nosuid,errors=panic  wait,check,formattable,quota
