@@ -37,7 +37,6 @@ This repo is checked out at `device/radxa/rock5`. The prebuilt kernel goes in `d
 AndroidProducts.mk          lunch targets
 BoardConfigCommon.mk        shared RK3588 board config: arch, partitions, kernel cmdline, boot image
 device-common.mk            shared RK3588 product config
-mkbootimg.mk                boot.img = FAT {Image, DTB, ramdisk.img, extlinux/extlinux.conf}
 boot/extlinux.conf          template U-Boot reads; @DTB@ and @CMDLINE@ are filled in at build time
 ramdisk/                    fstab.rock5, init.rock5.rc, ueventd.rock5.rc (shared, androidboot.hardware=rock5)
 manifest.xml, vendor.prop
@@ -46,7 +45,8 @@ bootloader/build-uboot.sh   mainline U-Boot + TF-A BL31 (+ rkbin DDR blob) -> u-
 kernel/build-kernel.sh      mainline LTS kernel built with AOSP clang
 kernel/rock5.config         board config fragment, merged over defconfig + AOSP android-base.config
 tools/mksdcard-kernel-test.sh  SD image with U-Boot + kernel + DTB only, for kernel bring-up
-tools/mkimg.sh              full SD image from an Android build (no sudo): U-Boot + boot/system/vendor/metadata/userdata
+tools/mkimg.sh              full SD image from an Android build (no sudo): U-Boot + boot/system/vendor/metadata/userdata;
+                            boot = FAT {Image, DTB, ramdisk.img, extlinux/extlinux.conf}
 ```
 
 The fstab mounts by GPT partition name, and `androidboot.boot_devices` says which controller holds them

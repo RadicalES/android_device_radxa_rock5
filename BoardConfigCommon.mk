@@ -21,12 +21,13 @@ TARGET_CPU_VARIANT := cortex-a76
 TARGET_NO_BOOTLOADER := true
 TARGET_NO_RECOVERY := true
 
-# Boot image: a FAT partition U-Boot reads through extlinux.conf
-BOARD_CUSTOM_BOOTIMG := true
-BOARD_CUSTOM_BOOTIMG_MK := $(COMMON_PATH)/mkbootimg.mk
+# The boot partition is a FAT filesystem U-Boot reads through extlinux.conf.
+# tools/mkimg.sh assembles it from the kernel, DTB and ramdisk.img; the Android
+# boot.img the build still makes is not used.
 
+# Kernel log on HDMI and UART; the last console= (UART) becomes /dev/console.
 # fe2c0000.mmc is the microSD controller; it makes /dev/block/by-name/* point there
-BOARD_KERNEL_CMDLINE := console=ttyS2,1500000 earlycon no_console_suspend
+BOARD_KERNEL_CMDLINE := console=tty0 console=ttyS2,1500000 earlycon no_console_suspend
 BOARD_KERNEL_CMDLINE += androidboot.hardware=rock5 androidboot.boot_devices=fe2c0000.mmc
 BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 
