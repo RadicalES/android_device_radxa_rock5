@@ -45,7 +45,7 @@ timeout 1
 label kernel-test
     kernel /Image
     fdt /$DTB
-    append console=ttyS2,1500000 earlycon no_console_suspend panic=0
+    append console=tty0 console=ttyS2,1500000 earlycon no_console_suspend panic=0
 EOF
 
 rm -f "$BOOTFS" "$IMG"
