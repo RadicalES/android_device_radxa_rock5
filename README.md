@@ -46,6 +46,7 @@ bootloader/build-uboot.sh   mainline U-Boot + TF-A BL31 (+ rkbin DDR blob) -> u-
 kernel/build-kernel.sh      mainline LTS kernel built with AOSP clang
 kernel/rock5.config         board config fragment, merged over defconfig + AOSP android-base.config
 tools/mksdcard-kernel-test.sh  SD image with U-Boot + kernel + DTB only, for kernel bring-up
+tools/mkimg.sh              full SD image from an Android build (no sudo): U-Boot + boot/system/vendor/metadata/userdata
 ```
 
 The fstab mounts by GPT partition name, and `androidboot.boot_devices` says which controller holds them
