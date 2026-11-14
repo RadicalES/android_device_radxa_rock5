@@ -22,6 +22,23 @@ PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
 PRODUCT_COPY_FILES += \
     $(KERNEL_PATH)/Image:$(PRODUCT_OUT)/kernel
 
+# Graphics, software-rendered stage: SwiftShader (Vulkan) under ANGLE (GLES),
+# minigbm gralloc on rockchip-drm dumb buffers, drm_hwcomposer on VOP2.
+# Proves the display path before Mesa Panfrost replaces SwiftShader.
+PRODUCT_PACKAGES += \
+    android.hardware.graphics.allocator-service.minigbm \
+    mapper.minigbm \
+    android.hardware.composer.hwc3-service.drm \
+    vulkan.pastel
+
+# SwiftShader JIT-compiles shaders into executable memory
+PRODUCT_REQUIRES_INSECURE_EXECMEM_FOR_SWIFTSHADER := true
+
+PRODUCT_VENDOR_PROPERTIES += \
+    ro.hardware.egl=angle \
+    ro.hardware.vulkan=pastel \
+    ro.opengles.version=196608
+
 # Keystore / lock screen (software implementations)
 PRODUCT_PACKAGES += \
     com.android.hardware.gatekeeper.nonsecure \

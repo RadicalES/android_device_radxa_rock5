@@ -22,8 +22,10 @@ does for the Raspberry Pi. raspberry-vanilla's `device/brcm/rpi5` tree is the st
    - [x] Mainline U-Boot (+ TF-A) builds
    - [x] Mainline kernel builds with Android + board config (`kernel/`)
    - [x] U-Boot boots the kernel on hardware (ROCK 5B, 8 GB: 8 CPUs, PMIC, Panthor, HDMI console at 1080p, RTL8125B, USB + HID touch)
-   - [ ] Device tree (`device/radxa/rock5`), ramdisk, fstab, image script
-   - [ ] Mesa Panfrost + minigbm + drm_hwcomposer → SurfaceFlinger up
+   - [x] Device tree (`device/radxa/rock5`), ramdisk, fstab, image script: boots to zygote,
+     SurfaceFlinger aborts for lack of a GLES driver
+   - [ ] Software rendering (SwiftShader + ANGLE, minigbm, drm_hwcomposer) → SurfaceFlinger up on HDMI
+   - [ ] Mesa Panfrost/PanVK replaces SwiftShader
 2. Ethernet, USB, adb, audio over HDMI.
 3. UVC cameras (external camera HAL), hardware video decode (`v4l2_codec2`/hantro, rkvdec).
 4. More boards; eMMC/NVMe boot.
