@@ -6,7 +6,7 @@
 #
 # Assemble a bootable SD card image from a finished Android build.
 #
-#   lunch aosp_rock5b-trunk_staging-userdebug && m
+#   lunch aosp_rock5b-bp1a-userdebug && m
 #   UBOOT=/path/to/u-boot-rockchip.bin device/radxa/rock5/tools/mkimg.sh
 #
 # Everything is built inside a sparse image file (no sudo, no loop devices).

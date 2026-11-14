@@ -8,4 +8,4 @@ PRODUCT_MAKEFILES := \
     $(LOCAL_DIR)/rock5b/aosp_rock5b.mk
 
 COMMON_LUNCH_CHOICES := \
-    aosp_rock5b-trunk_staging-userdebug
+    aosp_rock5b-bp1a-userdebug
