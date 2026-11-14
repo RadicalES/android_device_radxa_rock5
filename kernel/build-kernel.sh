@@ -71,10 +71,10 @@ echo ">> configuring"
   "$BUILD/.config" "$ANDROID_FRAG" "$TOP/kernel/rock5.config" "$BUILD/firmware.config")
 "${MAKE[@]}" olddefconfig
 
-# Every =y the board fragment asks for must survive olddefconfig; a symbol
+# Every option the board fragment sets must survive olddefconfig; a symbol
 # that was renamed or has an unmet dependency silently drops out otherwise.
-missing=$(grep -E '^CONFIG_[A-Z0-9_]+=y' "$TOP/kernel/rock5.config" | while read -r opt; do
-  grep -qx "$opt" "$BUILD/.config" || echo "  $opt (got: $(grep -E "^(# )?${opt%=y}[= ]" "$BUILD/.config" || echo unset))"
+missing=$(grep -E '^CONFIG_[A-Z0-9_]+=' "$TOP/kernel/rock5.config" | while read -r opt; do
+  grep -qxF "$opt" "$BUILD/.config" || echo "  $opt (got: $(grep -E "^(# )?${opt%%=*}[= ]" "$BUILD/.config" || echo unset))"
 done)
 if [ -n "$missing" ]; then
   echo "!! board config options did not apply:"
