@@ -21,7 +21,7 @@ does for the Raspberry Pi. raspberry-vanilla's `device/brcm/rpi5` tree is the st
 1. **Boot to Android home screen** over HDMI, shell on the debug UART, booting from microSD.
    - [x] Mainline U-Boot (+ TF-A) builds
    - [x] Mainline kernel builds with Android + board config (`kernel/`)
-   - [x] U-Boot boots the kernel on hardware (ROCK 5B, 8 GB: 8 CPUs, PMIC, Panthor, VOP2/HDMI, RTL8125B, USB)
+   - [x] U-Boot boots the kernel on hardware (ROCK 5B, 8 GB: 8 CPUs, PMIC, Panthor, HDMI console at 1080p, RTL8125B, USB + HID touch)
    - [ ] Device tree (`device/radxa/rock5`), ramdisk, fstab, image script
    - [ ] Mesa Panfrost + minigbm + drm_hwcomposer → SurfaceFlinger up
 2. Ethernet, USB, adb, audio over HDMI.
