@@ -82,6 +82,17 @@ if [ -n "$missing" ]; then
   exit 1
 fi
 
+# The android-base fragment targets the Android Common Kernel; on mainline some
+# options don't exist (ashmem, UID_SYS_STATS, quota2, ...). Report, don't fail,
+# so a new gap is noticed.
+dropped=$(grep -E '^CONFIG_[A-Z0-9_]+=' "$ANDROID_FRAG" | while read -r opt; do
+  grep -qxF "$opt" "$BUILD/.config" || echo "  $opt (got: $(grep -E "^(# )?${opt%%=*}[= ]" "$BUILD/.config" || echo unset))"
+done)
+if [ -n "$dropped" ]; then
+  echo ">> note: android-base options not applied:"
+  echo "$dropped"
+fi
+
 echo ">> building"
 "${MAKE[@]}" Image dtbs
 
