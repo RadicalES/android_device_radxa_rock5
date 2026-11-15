@@ -42,6 +42,7 @@ device-common.mk            shared RK3588 product config
 boot/extlinux.conf          template U-Boot reads; @DTB@ and @CMDLINE@ are filled in at build time
 ramdisk/                    fstab.rock5, init.rock5.rc, ueventd.rock5.rc (shared, androidboot.hardware=rock5)
 manifest.xml, vendor.prop
+sepolicy/                   vendor SELinux policy: file labels for the HALs (boot is still permissive)
 rock5b/                     ROCK 5B: BoardConfig.mk (picks the DTB), device.mk, aosp_rock5b.mk
 bootloader/build-uboot.sh   mainline U-Boot + TF-A BL31 (+ rkbin DDR blob) -> u-boot-rockchip.bin
 kernel/build-kernel.sh      mainline LTS kernel built with AOSP clang

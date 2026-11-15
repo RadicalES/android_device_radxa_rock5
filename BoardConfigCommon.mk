@@ -53,3 +53,6 @@ TARGET_BOOTLOADER_BOARD_NAME := rk3588
 
 # Properties
 TARGET_VENDOR_PROP += $(COMMON_PATH)/vendor.prop
+
+# SELinux (still permissive via androidboot.selinux; labels are needed regardless)
+BOARD_VENDOR_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy
