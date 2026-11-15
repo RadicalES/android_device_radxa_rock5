@@ -12,6 +12,10 @@ KERNEL_PATH := device/radxa/rock5-kernel
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit_only.mk)
 
+# Dalvik heap sizes. Without them the app heap limit is 16 MB and SystemUI
+# dies with OutOfMemoryError.
+$(call inherit-product, frameworks/native/build/tablet-7in-xhdpi-2048-dalvik-heap.mk)
+
 # API level
 PRODUCT_SHIPPING_API_LEVEL := 35
 
@@ -39,10 +43,45 @@ PRODUCT_VENDOR_PROPERTIES += \
     ro.hardware.vulkan=pastel \
     ro.opengles.version=196608
 
+# Bring-up: a larger log buffer, so early HAL logs survive until they are read,
+# and logcat persisted to /data/misc/logd, so a hang still leaves a log behind
+PRODUCT_SYSTEM_PROPERTIES += \
+    ro.logd.size=16M \
+    persist.logd.logpersistd=logcatd
+
+# Audio: AOSP reference AIDL HAL (stub primary module, remote submix, USB) so
+# audioserver can start; AudioFlinger crashes without any audio HAL.
+PRODUCT_PACKAGES += \
+    com.android.hardware.audio
+
+PRODUCT_COPY_FILES += \
+    $(COMMON_PATH)/audio/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml \
+    $(COMMON_PATH)/audio/primary_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/primary_audio_policy_configuration.xml \
+    frameworks/av/services/audiopolicy/config/r_submix_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/r_submix_audio_policy_configuration.xml \
+    frameworks/av/services/audiopolicy/config/bluetooth_audio_policy_configuration_7_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/bluetooth_audio_policy_configuration_7_0.xml \
+    frameworks/av/services/audiopolicy/config/audio_policy_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_volumes.xml \
+    frameworks/av/services/audiopolicy/config/default_volume_tables.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default_volume_tables.xml \
+    hardware/interfaces/audio/aidl/default/audio_effects_config.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_effects_config.xml
+
+# Health: AOSP example HAL. BatteryService in system_server needs an IHealth
+# instance and aborts the boot without one; a board with no battery reports none.
+PRODUCT_PACKAGES += \
+    android.hardware.health-service.example
+
+# Power: AOSP example HAL. HintManagerService in system_server aborts the boot
+# without an IPower instance (null SupportInfo).
+PRODUCT_PACKAGES += \
+    com.android.hardware.power
+
 # Keystore / lock screen (software implementations)
 PRODUCT_PACKAGES += \
     com.android.hardware.gatekeeper.nonsecure \
     com.android.hardware.keymint.rust_nonsecure
+
+# Device features (app widgets, etc.). Launcher3 crashes without
+# android.software.app_widgets: AppWidgetManager is null.
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/tablet_core_hardware.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/tablet_core_hardware.xml
 
 # Ethernet
 PRODUCT_COPY_FILES += \

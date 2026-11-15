@@ -7,7 +7,8 @@ for RK3588. This port goes the other way: **mainline Linux LTS kernel, mainline 
 (Panfrost/PanVK) for the Mali-G610**, much as [raspberry-vanilla](https://github.com/raspberry-vanilla)
 does for the Raspberry Pi. raspberry-vanilla's `device/brcm/rpi5` tree is the structural template.
 
-> **Status: early bring-up.** Only the ROCK 5B is being worked on. Nothing boots Android yet.
+> **Status: early bring-up.** Only the ROCK 5B is being worked on. It boots to the Android home screen
+> over HDMI with software rendering; most hardware is not wired up yet.
 
 ## Supported boards
 
@@ -21,10 +22,11 @@ does for the Raspberry Pi. raspberry-vanilla's `device/brcm/rpi5` tree is the st
 1. **Boot to Android home screen** over HDMI, shell on the debug UART, booting from microSD.
    - [x] Mainline U-Boot (+ TF-A) builds
    - [x] Mainline kernel builds with Android + board config (`kernel/`)
-   - [x] U-Boot boots the kernel on hardware (ROCK 5B, 8 GB: 8 CPUs, PMIC, Panthor, HDMI console at 1080p, RTL8125B, USB + HID touch)
+   - [x] U-Boot boots the kernel on hardware (ROCK 5B, 8 GB: 8 CPUs, PMIC, Panthor, HDMI console, RTL8125B, USB + HID touch)
    - [x] Device tree (`device/radxa/rock5`), ramdisk, fstab, image script: boots to zygote,
      SurfaceFlinger aborts for lack of a GLES driver
-   - [ ] Software rendering (SwiftShader + ANGLE, minigbm, drm_hwcomposer) → SurfaceFlinger up on HDMI
+   - [x] Software rendering (SwiftShader + ANGLE, minigbm, drm_hwcomposer): home screen on HDMI at 1080p.
+     Stub HALs from AOSP (audio, health, power, keymint, gatekeeper)
    - [ ] Mesa Panfrost/PanVK replaces SwiftShader
 2. Ethernet, USB, adb, audio over HDMI.
 3. UVC cameras (external camera HAL), hardware video decode (`v4l2_codec2`/hantro, rkvdec).
@@ -42,7 +44,9 @@ device-common.mk            shared RK3588 product config
 boot/extlinux.conf          template U-Boot reads; @DTB@ and @CMDLINE@ are filled in at build time
 ramdisk/                    fstab.rock5, init.rock5.rc, ueventd.rock5.rc (shared, androidboot.hardware=rock5)
 manifest.xml, vendor.prop
+audio/                      audio policy for the reference AIDL audio HAL
 sepolicy/                   vendor SELinux policy: file labels for the HALs (boot is still permissive)
+patches/                    patches to other AOSP projects, by path (see "Patches" below)
 rock5b/                     ROCK 5B: BoardConfig.mk (picks the DTB), device.mk, aosp_rock5b.mk
 bootloader/build-uboot.sh   mainline U-Boot + TF-A BL31 (+ rkbin DDR blob) -> u-boot-rockchip.bin
 kernel/build-kernel.sh      mainline LTS kernel built with AOSP clang
@@ -57,6 +61,19 @@ The fstab mounts by GPT partition name, and `androidboot.boot_devices` says whic
 
 Adding a board = a new `<board>/` with its own DTB and product file. Planned: a `local_manifest` for the
 Mesa/minigbm/drm_hwcomposer forks; the kernel and manifest will probably move to their own repos.
+
+### Patches
+
+Until those forks exist, changes to other AOSP projects live in `patches/<project path>/` and are applied
+by hand after `repo sync`:
+
+```sh
+git -C external/minigbm apply $PWD/device/radxa/rock5/patches/external/minigbm/*.patch
+```
+
+- `external/minigbm`: gralloc drops DRM master after opening a card node. RK3588's render node (panthor)
+  has no minigbm backend, so gralloc opens the display node, and the first opener becomes DRM master;
+  without the patch drm_hwcomposer can't take the display and falls back to a headless null display.
 
 ## Building
 

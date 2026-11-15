@@ -6,3 +6,15 @@ on fs
 
 on late-fs
     mount_all /vendor/etc/fstab.rock5 --late
+
+# Mainline kernels have no ashmem (an Android Common Kernel driver), so
+# libcutils must use memfd. init.rc sets sys.use_memfd=false in post-fs-data;
+# this action runs after it and before zygote starts. Without it
+# system_server dies with "Failed to create ashmem".
+on post-fs-data
+    setprop sys.use_memfd true
+
+# Bring-up: suspend is not supported on this board yet, and Android tries it
+# as soon as it boots and nothing holds a wakelock. Hold one for good.
+on boot
+    write /sys/power/wake_lock rock5_no_suspend

@@ -7,6 +7,7 @@
 # Kernel bring-up card: U-Boot + kernel + DTB, no Android.
 #
 #   tools/mksdcard-kernel-test.sh [dtb]      # default: rk3588-rock-5b.dtb
+#   EXTRA_CMDLINE="..." tools/mksdcard-kernel-test.sh   # extra kernel arguments
 #
 # Output: out/rock5-kernel-test.img. Write it with
 #   sudo dd if=out/rock5-kernel-test.img of=/dev/sdX bs=4M conv=fsync
@@ -45,7 +46,7 @@ timeout 1
 label kernel-test
     kernel /Image
     fdt /$DTB
-    append console=tty0 console=ttyS2,1500000 earlycon no_console_suspend panic=0
+    append console=tty0 console=ttyS2,1500000 earlycon no_console_suspend panic=0 ${EXTRA_CMDLINE:-}
 EOF
 
 rm -f "$BOOTFS" "$IMG"

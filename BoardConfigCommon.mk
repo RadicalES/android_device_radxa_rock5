@@ -27,7 +27,9 @@ TARGET_NO_RECOVERY := true
 
 # Kernel log on HDMI and UART; the last console= (UART) becomes /dev/console.
 # fe2c0000.mmc is the microSD controller; it makes /dev/block/by-name/* point there
-BOARD_KERNEL_CMDLINE := console=tty0 console=ttyS2,1500000 earlycon no_console_suspend
+# loglevel=4: only warnings and worse on the console, so the UART shell stays
+# usable; dmesg still has everything
+BOARD_KERNEL_CMDLINE := console=tty0 console=ttyS2,1500000 earlycon no_console_suspend loglevel=4
 BOARD_KERNEL_CMDLINE += androidboot.hardware=rock5 androidboot.boot_devices=fe2c0000.mmc
 BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 
