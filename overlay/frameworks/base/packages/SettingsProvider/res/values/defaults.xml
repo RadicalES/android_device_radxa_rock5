@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2026 RadicalES
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <!-- A mains-powered board with an external monitor: never time the screen out.
+         (stay_on_while_plugged_in doesn't help: with no battery, the health HAL
+         reports no charger.) -->
+    <integer name="def_screen_off_timeout">2147483647</integer>
+</resources>
