@@ -43,6 +43,7 @@ The local manifest adds:
 | `device/radxa/rock5-kernel` | prebuilt kernel (`Image`, DTBs, `config`) and `u-boot-rockchip.bin` |
 | `vendor/google/graphics/desktop/mesa3d/panvk` | Mesa 26.0 with a generated Soong build |
 | `external/minigbm` | minigbm with the rock5 gralloc change (replaces AOSP's) |
+| `hardware/interfaces` | AOSP's, with the Bluetooth HAL rfkill fix (replaces AOSP's) |
 
 ## 3. Build and SD image
 
