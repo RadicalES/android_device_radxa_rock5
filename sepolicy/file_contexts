@@ -4,14 +4,14 @@
 # DRM/KMS (rockchip-drm) and GPU (panthor) nodes
 /dev/dri(/.*)?                                                        u:object_r:gpu_device:s0
 
-# Graphics: minigbm gralloc, drm_hwcomposer, SwiftShader
+# Graphics: minigbm gralloc, drm_hwcomposer, Mesa PanVK
 /vendor/bin/hw/android\.hardware\.graphics\.allocator-service\.minigbm u:object_r:hal_graphics_allocator_default_exec:s0
 /vendor/bin/hw/android\.hardware\.composer\.hwc3-service\.drm         u:object_r:hal_graphics_composer_default_exec:s0
 /vendor/lib64/hw/mapper\.minigbm\.so                                  u:object_r:same_process_hal_file:s0
 /vendor/lib64/libminigbm_gralloc\.so                                  u:object_r:same_process_hal_file:s0
 /vendor/lib64/libminigbm_gralloc4_utils\.so                           u:object_r:same_process_hal_file:s0
 /vendor/lib64/libdrm\.so                                              u:object_r:same_process_hal_file:s0
-/vendor/lib64/hw/vulkan\.pastel\.so                                   u:object_r:same_process_hal_file:s0
+/vendor/lib64/hw/vulkan\.panfrost\.so                                 u:object_r:same_process_hal_file:s0
 
 # Health (BatteryService)
 /vendor/bin/hw/android\.hardware\.health-service\.example            u:object_r:hal_health_default_exec:s0
