@@ -34,8 +34,9 @@ does for the Raspberry Pi. raspberry-vanilla's `device/brcm/rpi5` tree is the st
 
 ## Layout
 
-This repo is checked out at `device/radxa/rock5`. The prebuilt kernel goes in `device/radxa/rock5-kernel`
-(`Image` + DTBs), as raspberry-vanilla does with `rpi5-kernel`.
+This repo is checked out at `device/radxa/rock5`. The prebuilt kernel (`Image`, DTBs) and U-Boot come from
+[android_device_radxa_rock5-kernel](https://github.com/RadicalES/android_device_radxa_rock5-kernel) at
+`device/radxa/rock5-kernel`, as raspberry-vanilla does with `rpi5-kernel`; the scripts below rebuild them.
 
 ```
 AndroidProducts.mk          lunch targets
@@ -100,6 +101,10 @@ AOSP=/path/to/aosp-15 kernel/build-kernel.sh
 bootloader/build-uboot.sh
 sudo dd if=out/bootloader/u-boot-rockchip.bin of=/dev/sdX seek=64 conv=notrunc,fsync
 ```
+
+To update the prebuilts, copy `out/kernel/{Image,*.dtb,version}`, `out/kernel/.config` (as `config`) and
+`out/bootloader/u-boot-rockchip.bin` into `device/radxa/rock5-kernel` and commit there, naming this repo's
+commit and the versions in the message.
 
 Debug UART: 3.3 V TTL on the 40-pin header (pin 8 TX, pin 10 RX, pin 6 GND), **1500000 baud**.
 

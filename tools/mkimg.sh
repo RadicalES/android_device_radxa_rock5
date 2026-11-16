@@ -7,7 +7,10 @@
 # Assemble a bootable SD card image from a finished Android build.
 #
 #   lunch aosp_rock5b-bp1a-userdebug && m
-#   UBOOT=/path/to/u-boot-rockchip.bin device/radxa/rock5/tools/mkimg.sh
+#   device/radxa/rock5/tools/mkimg.sh
+#
+# U-Boot comes from the prebuilt repo (device/radxa/rock5-kernel); set
+# UBOOT=/path/to/u-boot-rockchip.bin to use another (bootloader/build-uboot.sh).
 #
 # Everything is built inside a sparse image file (no sudo, no loop devices).
 # Partition names must match ramdisk/fstab.rock5 (mounted by-name).
@@ -27,8 +30,6 @@ die() { echo "!! $*"; exit 1; }
 [ -n "${ANDROID_PRODUCT_OUT:-}" ] || die "ANDROID_PRODUCT_OUT is not set. Run lunch first."
 OUT=$ANDROID_PRODUCT_OUT
 TOP=${ANDROID_BUILD_TOP:?run lunch first}
-UBOOT=${UBOOT:?set UBOOT to u-boot-rockchip.bin (bootloader/build-uboot.sh)}
-[ -f "$UBOOT" ] || die "missing $UBOOT"
 for f in kernel ramdisk.img system.img vendor.img; do
   [ -f "$OUT/$f" ] || die "missing $OUT/$f; build it first"
 done
@@ -39,6 +40,8 @@ eval "$(cd "$TOP" && build/soong/soong_ui.bash --dumpvars-mode \
 [ -n "${ROCK5_DTB:-}" ] && [ -n "${BOARD_KERNEL_CMDLINE:-}" ] || die "could not read board variables"
 DTB_FILE=$TOP/$KERNEL_PATH/$ROCK5_DTB
 [ -f "$DTB_FILE" ] || die "missing $DTB_FILE"
+UBOOT=${UBOOT:-$TOP/$KERNEL_PATH/u-boot-rockchip.bin}
+[ -f "$UBOOT" ] || die "missing $UBOOT"
 
 DEVICE=$(basename "$OUT")
 IMG=${IMG:-$OUT/aosp15-$DEVICE-$(date +%Y%m%d).img}
