@@ -52,6 +52,9 @@ rock5b/                     ROCK 5B: BoardConfig.mk (picks the DTB), device.mk, 
 bootloader/build-uboot.sh   mainline U-Boot + TF-A BL31 (+ rkbin DDR blob) -> u-boot-rockchip.bin
 kernel/build-kernel.sh      mainline LTS kernel built with AOSP clang
 kernel/rock5.config         board config fragment, merged over defconfig + AOSP android-base.config
+docs/BUILDING.md            full build recipe, prebuilt updates, Mesa regeneration
+tools/update-prebuilts.sh   rebuild kernel and/or U-Boot into device/radxa/rock5-kernel
+tools/mesa/                 regenerate Mesa's Android.bp (ninja-to-soong) and apply the rock5 fixups
 tools/mksdcard-kernel-test.sh  SD image with U-Boot + kernel + DTB only, for kernel bring-up
 tools/mkimg.sh              full SD image from an Android build (no sudo): U-Boot + boot/system/vendor/metadata/userdata;
                             boot = FAT {Image, DTB, ramdisk.img, extlinux/extlinux.conf}
@@ -90,21 +93,17 @@ generated file:
 
 ## Building
 
-Both scripts write to `out/`.
+See **[docs/BUILDING.md](docs/BUILDING.md)** for the full recipe: host packages, `repo` setup, build, SD image,
+flashing and reading logs off the card, plus rebuilding the prebuilt kernel and U-Boot
+(`tools/update-prebuilts.sh`) and regenerating Mesa's `Android.bp` (`tools/mesa/`). In short:
 
 ```sh
-# Kernel: AOSP provides the clang toolchain and kernel/configs fragments
-# (needs libssl-dev libelf-dev)
-AOSP=/path/to/aosp-15 kernel/build-kernel.sh
-
-# Bootloader: needs gcc-aarch64-linux-gnu swig python3-pyelftools libgnutls28-dev uuid-dev
-bootloader/build-uboot.sh
-sudo dd if=out/bootloader/u-boot-rockchip.bin of=/dev/sdX seek=64 conv=notrunc,fsync
+repo init -u https://android.googlesource.com/platform/manifest -b android-15.0.0_r32
+git clone https://github.com/RadicalES/android_local_manifest_rock5 .repo/local_manifests -b android-15.0
+repo sync -c -j8
+. build/envsetup.sh && lunch aosp_rock5b-bp1a-userdebug && m
+device/radxa/rock5/tools/mkimg.sh
 ```
-
-To update the prebuilts, copy `out/kernel/{Image,*.dtb,version}`, `out/kernel/.config` (as `config`) and
-`out/bootloader/u-boot-rockchip.bin` into `device/radxa/rock5-kernel` and commit there, naming this repo's
-commit and the versions in the message.
 
 Debug UART: 3.3 V TTL on the 40-pin header (pin 8 TX, pin 10 RX, pin 6 GND), **1500000 baud**.
 
