@@ -46,7 +46,6 @@ ramdisk/                    fstab.rock5, init.rock5.rc, ueventd.rock5.rc (shared
 manifest.xml, vendor.prop
 audio/                      audio policy for the reference AIDL audio HAL
 sepolicy/                   vendor SELinux policy: file labels for the HALs (boot is still permissive)
-patches/                    patches to other AOSP projects, by path (see "Patches" below)
 overlay/                    resource overlays (settings defaults: no screen timeout)
 rock5b/                     ROCK 5B: BoardConfig.mk (picks the DTB), device.mk, aosp_rock5b.mk
 bootloader/build-uboot.sh   mainline U-Boot + TF-A BL31 (+ rkbin DDR blob) -> u-boot-rockchip.bin
@@ -66,18 +65,14 @@ The tree is assembled with the local manifest in
 [android_local_manifest_rock5](https://github.com/RadicalES/android_local_manifest_rock5) (this repo plus
 Mesa) on top of AOSP `android-15.0.0_r32`; its README has the `repo init`/`sync` steps.
 
-### Patches
+### Changes to other AOSP projects
 
-Until those forks exist, changes to other AOSP projects live in `patches/<project path>/` and are applied
-by hand after `repo sync`:
+These live in forks that the local manifest swaps in for AOSP's projects:
 
-```sh
-git -C external/minigbm apply $PWD/device/radxa/rock5/patches/external/minigbm/*.patch
-```
-
-- `external/minigbm`: gralloc drops DRM master after opening a card node. RK3588's render node (panthor)
-  has no minigbm backend, so gralloc opens the display node, and the first opener becomes DRM master;
-  without the patch drm_hwcomposer can't take the display and falls back to a headless null display.
+- `external/minigbm` ([RadicalES/minigbm](https://github.com/RadicalES/minigbm), `android-15-rock5`): gralloc
+  drops DRM master after opening a card node. RK3588's render node (panthor) has no minigbm backend, so
+  gralloc opens the display node, and the first opener becomes DRM master; without the change
+  drm_hwcomposer can't take the display and falls back to a headless null display.
 
 ### Mesa
 
@@ -91,7 +86,6 @@ generated file:
 - Mesa's IMapper gralloc backend (`u_gralloc_imapper5_api.cpp`, linked with `libui`) is added. Without it
   Mesa falls back to a gralloc stub that reports an invalid modifier for every buffer, and PanVK crashes
   importing SurfaceFlinger's buffers.
-
 
 ## Building
 
