@@ -1,0 +1,2 @@
+# /dev/rfkill: the Bluetooth HAL blocks and unblocks the adapter through it
+type rfkill_device, dev_type;

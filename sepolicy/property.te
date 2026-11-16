@@ -1,0 +1,2 @@
+# vendor.rock5.*: optional hardware found by init.rock5.hwdetect.sh
+vendor_internal_prop(vendor_rock5_hwdetect_prop)

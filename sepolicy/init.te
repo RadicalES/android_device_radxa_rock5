@@ -1,0 +1,3 @@
+# init.rock5.rc bind-mounts the feature list of optional hardware that is
+# present over its empty placeholder in /vendor/etc/permissions.
+allow init vendor_configs_file:file mounton;

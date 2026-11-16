@@ -29,6 +29,8 @@ ANDROID_FRAG=${ANDROID_FRAG:-$AOSP/kernel/configs/w/android-6.12/android-base.co
 
 # Firmware a built-in driver needs before /vendor is mounted.
 FIRMWARE="arm/mali/arch10.8/mali_csffw.bin rtl_nic/rtl8125b-2.fw"
+# RTL8852B / 8852BT USB Bluetooth (the 8852B needs no config file)
+FIRMWARE+=" rtl_bt/rtl8852bu_fw.bin rtl_bt/rtl8852btu_fw.bin"
 FW_URL=https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain
 
 missing=""

@@ -15,3 +15,7 @@
 
 # Health (BatteryService)
 /vendor/bin/hw/android\.hardware\.health-service\.example            u:object_r:hal_health_default_exec:s0
+
+# Optional hardware detection (Bluetooth feature list)
+/vendor/bin/init\.rock5\.hwdetect\.sh                              u:object_r:rock5_hwdetect_exec:s0
+/dev/rfkill                                                       u:object_r:rfkill_device:s0

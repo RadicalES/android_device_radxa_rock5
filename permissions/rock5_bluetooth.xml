@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 RadicalES
+     SPDX-License-Identifier: Apache-2.0 -->
+<!-- Bluetooth features, Classic and LE. Installed as
+     /vendor/etc/rock5/rock5_bluetooth.xml and bind-mounted over
+     /vendor/etc/permissions/rock5_bluetooth.xml (an empty placeholder) by
+     init.rock5.rc when init.rock5.hwdetect.sh finds a Bluetooth adapter. -->
+<permissions>
+    <feature name="android.hardware.bluetooth" />
+    <feature name="android.hardware.bluetooth_le" />
+</permissions>

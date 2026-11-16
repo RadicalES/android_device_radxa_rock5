@@ -1,0 +1,7 @@
+# The Bluetooth HAL unblocks the adapter through /dev/rfkill and reads
+# /sys/class/rfkill/rfkill<N>/name to pick the hci device's rfkill, not the
+# board's rfkill-gpio enable line.
+allow hal_bluetooth_default rfkill_device:chr_file rw_file_perms;
+allow hal_bluetooth_default sysfs:dir r_dir_perms;
+allow hal_bluetooth_default sysfs:lnk_file read;
+allow hal_bluetooth_default sysfs:file r_file_perms;

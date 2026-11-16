@@ -13,8 +13,23 @@ on late-fs
 # system_server dies with "Failed to create ashmem".
 on post-fs-data
     setprop sys.use_memfd true
+    # Optional hardware (Bluetooth): declare its features only if present.
+    # Blocking, and before zygote-start, so system_server sees the result.
+    exec_start vendor.rock5-hwdetect
+
+# Features of optional hardware found by init.rock5.hwdetect.sh. init.rc
+# queues load_persist_props_action during post-fs-data, so this runs after
+# the detection above and before zygote-start.
+on load_persist_props_action && property:vendor.rock5.bluetooth=present
+    mount none /vendor/etc/rock5/rock5_bluetooth.xml /vendor/etc/permissions/rock5_bluetooth.xml bind
 
 # Bring-up: suspend is not supported on this board yet, and Android tries it
 # as soon as it boots and nothing holds a wakelock. Hold one for good.
 on boot
     write /sys/power/wake_lock rock5_no_suspend
+
+service vendor.rock5-hwdetect /vendor/bin/init.rock5.hwdetect.sh
+    user root
+    group root
+    oneshot
+    disabled

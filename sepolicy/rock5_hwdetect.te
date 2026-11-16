@@ -1,0 +1,15 @@
+# init.rock5.hwdetect.sh: looks for optional hardware in sysfs and reports it
+# in vendor.rock5.* properties (see the script).
+type rock5_hwdetect, domain;
+type rock5_hwdetect_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(rock5_hwdetect)
+
+allow rock5_hwdetect vendor_shell_exec:file rx_file_perms;
+allow rock5_hwdetect vendor_toolbox_exec:file rx_file_perms;
+
+r_dir_file(rock5_hwdetect, sysfs)
+r_dir_file(rock5_hwdetect, sysfs_bluetooth_writable)
+
+set_prop(rock5_hwdetect, vendor_rock5_hwdetect_prop)
+
+allow rock5_hwdetect kmsg_device:chr_file w_file_perms;

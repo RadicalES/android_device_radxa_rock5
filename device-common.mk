@@ -79,9 +79,24 @@ PRODUCT_PACKAGES += \
 DEVICE_PACKAGE_OVERLAYS += $(COMMON_PATH)/overlay
 
 # Device features (app widgets, etc.). Launcher3 crashes without
-# android.software.app_widgets: AppWidgetManager is null.
+# android.software.app_widgets: AppWidgetManager is null. AOSP's tablet list
+# minus Bluetooth, which is optional hardware (below).
 PRODUCT_COPY_FILES += \
-    frameworks/native/data/etc/tablet_core_hardware.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/tablet_core_hardware.xml
+    $(COMMON_PATH)/permissions/rock5_core_hardware.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/rock5_core_hardware.xml
+
+# Bluetooth: optional (USB adapter, e.g. on an M.2 E-key module). AOSP's
+# generic AIDL HAL drives it over the kernel's HCI user channel; its rfkill
+# handling is fixed in RadicalES/hardware_interfaces (local manifest). The
+# features start out empty and are enabled at boot only when
+# init.rock5.hwdetect.sh finds an adapter (init.rock5.rc), so a board without
+# one has no Bluetooth stack running.
+PRODUCT_PACKAGES += \
+    android.hardware.bluetooth-service.default
+
+PRODUCT_COPY_FILES += \
+    $(COMMON_PATH)/permissions/rock5_bluetooth_absent.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/rock5_bluetooth.xml \
+    $(COMMON_PATH)/permissions/rock5_bluetooth.xml:$(TARGET_COPY_OUT_VENDOR)/etc/rock5/rock5_bluetooth.xml \
+    $(COMMON_PATH)/ramdisk/init.rock5.hwdetect.sh:$(TARGET_COPY_OUT_VENDOR)/bin/init.rock5.hwdetect.sh
 
 # Ethernet
 PRODUCT_COPY_FILES += \

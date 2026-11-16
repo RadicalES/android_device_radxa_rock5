@@ -1,2 +1,5 @@
 # GPU (Panthor) and display
 /dev/dri/*                0666   system     graphics
+
+# Bluetooth HAL (user bluetooth) unblocks the adapter through rfkill
+/dev/rfkill               0660   bluetooth  bluetooth
