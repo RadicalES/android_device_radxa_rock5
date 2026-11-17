@@ -40,6 +40,11 @@ PRODUCT_VENDOR_PROPERTIES += \
     ro.hardware.vulkan=panfrost \
     ro.opengles.version=196608
 
+# No lock screen by default. A system property: set from the vendor
+# build.prop it is applied with vendor_init's permissions and refused.
+PRODUCT_SYSTEM_PROPERTIES += \
+    ro.lockscreen.disable.default=true
+
 # Bring-up: a larger log buffer, so early HAL logs survive until they are read,
 # and logcat persisted to /data/misc/logd, so a hang still leaves a log behind
 PRODUCT_SYSTEM_PROPERTIES += \
@@ -108,6 +113,11 @@ PRODUCT_COPY_FILES += \
     $(COMMON_PATH)/ramdisk/fstab.rock5:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.rock5 \
     $(COMMON_PATH)/ramdisk/init.rock5.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.rock5.rc \
     $(COMMON_PATH)/ramdisk/ueventd.rock5.rc:$(TARGET_COPY_OUT_VENDOR)/etc/ueventd.rc
+
+# Network adb switch (Settings fork): init actions on system properties, which
+# must live outside /vendor.
+PRODUCT_COPY_FILES += \
+    $(COMMON_PATH)/system_ext/init.adb-tcp.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.adb-tcp.rc
 
 # Soong
 PRODUCT_SOONG_NAMESPACES += $(COMMON_PATH)

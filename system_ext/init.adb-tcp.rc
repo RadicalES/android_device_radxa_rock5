@@ -1,0 +1,19 @@
+# Network adb ("Ethernet debugging" in Developer options, Settings fork).
+#
+# Settings may not set adbd's port or restart adbd, so it sets these system
+# properties and init applies them. adbd reads the port when it starts; the
+# restart flag (set by Settings after the switch, not persistent) restarts it
+# once, only if it is running, so a switch flipped while USB debugging is off
+# does not start it.
+#
+# Installed on /system_ext: actions in /vendor run in vendor_init, which may not
+# trigger on system properties.
+on property:persist.sys.adb.tcp.enable=true
+    setprop service.adb.tcp.port 5555
+
+on property:persist.sys.adb.tcp.enable=false
+    setprop service.adb.tcp.port 0
+
+on property:sys.adb.tcp.restart=1 && property:init.svc.adbd=running
+    setprop sys.adb.tcp.restart 0
+    restart adbd

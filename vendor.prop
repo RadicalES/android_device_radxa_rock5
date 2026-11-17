@@ -2,5 +2,3 @@
 ro.soc.manufacturer=Rockchip
 ro.soc.model=RK3588
 
-# Lockscreen
-ro.lockscreen.disable.default=true
