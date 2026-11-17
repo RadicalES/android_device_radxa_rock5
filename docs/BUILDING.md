@@ -106,7 +106,7 @@ For a kernel-only bring-up card (U-Boot + kernel + DTB, no Android), use `tools/
 
 Mesa is built by Soong from an `Android.bp` that [ninja-to-soong](https://github.com/rjodinchr/ninja-to-soong)
 generates from Mesa's meson build, cross-compiled with the NDK. Regenerate it when moving to a new Mesa
-version or changing Mesa build options; it is checked in to RadicalES/mesa, so a normal build never needs this.
+version or changing Mesa build options; it is checked in to RadicalES/android_external_mesa, so a normal build never needs this.
 
 **Host requirements** (in addition to section 1):
 
@@ -142,5 +142,5 @@ fixups.
 
 **Moving to a new Mesa version:** fetch the new upstream tag
 (`git fetch https://gitlab.freedesktop.org/mesa/mesa.git tag mesa-X.Y.Z`), start a branch from it, regenerate
-as above and push the branch to RadicalES/mesa; point the local manifest at it once tested. Mesa 27 and later
+as above and push the branch to RadicalES/android_external_mesa; point the local manifest at it once tested. Mesa 27 and later
 need Rust 1.85, which Android 15's toolchain (1.81) does not have; 26.0 builds no Rust code.

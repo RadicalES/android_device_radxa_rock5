@@ -86,7 +86,7 @@ PRODUCT_COPY_FILES += \
 
 # Bluetooth: optional (USB adapter, e.g. on an M.2 E-key module). AOSP's
 # generic AIDL HAL drives it over the kernel's HCI user channel; its rfkill
-# handling is fixed in RadicalES/hardware_interfaces (local manifest). The
+# handling is fixed in RadicalES/android_hardware_interfaces (local manifest). The
 # features start out empty and are enabled at boot only when
 # init.rock5.hwdetect.sh finds an adapter (init.rock5.rc), so a board without
 # one has no Bluetooth stack running.

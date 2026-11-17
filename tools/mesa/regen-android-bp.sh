@@ -9,7 +9,7 @@
 #
 #   N2S_NDK_PATH=/path/to/android-ndk-r27d device/radxa/rock5/tools/mesa/regen-android-bp.sh
 #
-# Run inside a synced AOSP tree. Mesa (RadicalES/mesa) must be checked out at
+# Run inside a synced AOSP tree. Mesa (RadicalES/android_external_mesa) must be checked out at
 # vendor/google/graphics/desktop/mesa3d/panvk, the path ninja-to-soong
 # generates for. Host requirements: see docs/BUILDING.md, "Regenerating Mesa's
 # Android.bp". Work files go to out/rock5-n2s (override with WORK=).
