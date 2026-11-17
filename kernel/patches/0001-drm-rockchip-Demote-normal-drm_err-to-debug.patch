@@ -1,0 +1,64 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Stone <daniels@collabora.com>
+Date: Wed, 15 Oct 2025 12:00:30 +0100
+Subject: [PATCH 1/2] drm/rockchip: Demote normal drm_err to debug
+
+A plane check failing is a normal and expected condition, as userspace
+isn't aware of the specific constraints and will try any and every
+combination until one succeeds. Push this down to a debug message, so
+users can see it if they want to, but make sure we don't spam the log
+during normal operation.
+
+Fixes: 604be85547ce4 ("drm/rockchip: Add VOP2 driver")
+Signed-off-by: Daniel Stone <daniels@collabora.com>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://lore.kernel.org/r/20251015110042.41273-2-daniels@collabora.com
+(cherry picked from commit f233921d988ae6a990e76d0532b241ce3dc57c12)
+[backport to 6.18: context, the dest height check is already fixed there]
+
+---
+ drivers/gpu/drm/rockchip/rockchip_drm_vop2.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
+index 3c48984..8507076 100644
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
+@@ -1035,20 +1035,20 @@ static int vop2_plane_atomic_check(struct drm_plane *plane,
+ 
+ 	if (drm_rect_width(src) >> 16 < 4 || drm_rect_height(src) >> 16 < 4 ||
+ 	    drm_rect_width(dest) < 4 || drm_rect_height(dest) < 4) {
+-		drm_err(vop2->drm, "Invalid size: %dx%d->%dx%d, min size is 4x4\n",
+-			drm_rect_width(src) >> 16, drm_rect_height(src) >> 16,
+-			drm_rect_width(dest), drm_rect_height(dest));
++		drm_dbg_kms(vop2->drm, "Invalid size: %dx%d->%dx%d, min size is 4x4\n",
++			    drm_rect_width(src) >> 16, drm_rect_height(src) >> 16,
++			    drm_rect_width(dest), drm_rect_height(dest));
+ 		pstate->visible = false;
+ 		return 0;
+ 	}
+ 
+ 	if (drm_rect_width(src) >> 16 > vop2_data->max_input.width ||
+ 	    drm_rect_height(src) >> 16 > vop2_data->max_input.height) {
+-		drm_err(vop2->drm, "Invalid source: %dx%d. max input: %dx%d\n",
+-			drm_rect_width(src) >> 16,
+-			drm_rect_height(src) >> 16,
+-			vop2_data->max_input.width,
+-			vop2_data->max_input.height);
++		drm_dbg_kms(vop2->drm, "Invalid source: %dx%d. max input: %dx%d\n",
++			    drm_rect_width(src) >> 16,
++			    drm_rect_height(src) >> 16,
++			    vop2_data->max_input.width,
++			    vop2_data->max_input.height);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -1057,7 +1057,7 @@ static int vop2_plane_atomic_check(struct drm_plane *plane,
+ 	 * need align with 2 pixel.
+ 	 */
+ 	if (fb->format->is_yuv && ((pstate->src.x1 >> 16) % 2)) {
+-		drm_err(vop2->drm, "Invalid Source: Yuv format not support odd xpos\n");
++		drm_dbg_kms(vop2->drm, "Invalid Source: Yuv format not support odd xpos\n");
+ 		return -EINVAL;
+ 	}
+ 

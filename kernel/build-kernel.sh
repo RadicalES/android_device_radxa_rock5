@@ -48,10 +48,31 @@ MAKE=(make -C "$SRC" O="$BUILD" ARCH=arm64 LLVM=1 -j"$(nproc)")
 echo ">> kernel $KERNEL_VERSION, clang $(basename "$CLANG_DIR")"
 mkdir -p "$WORK" "$BUILD" "$FWDIR" "$DIST"
 
+# Upstream fixes not yet in this LTS release, applied in order to a fresh
+# source tree. The tree records which series it carries and is re-extracted
+# when kernel/patches/ changes.
+PATCHES=("$TOP"/kernel/patches/*.patch)
+[ -e "${PATCHES[0]}" ] || PATCHES=()
+STAMP=$(cat "${PATCHES[@]}" /dev/null | sha256sum | cut -d' ' -f1)
+if [ -d "$SRC" ] && [ "$(cat "$SRC/.rock5-patches" 2>/dev/null)" != "$STAMP" ]; then
+  echo ">> kernel/patches changed, re-extracting linux-$KERNEL_VERSION"
+  rm -rf "$SRC"
+fi
+
+TARBALL=$WORK/linux-$KERNEL_VERSION.tar.xz
 if [ ! -d "$SRC" ]; then
-  echo ">> fetching linux-$KERNEL_VERSION"
-  curl -fL "https://cdn.kernel.org/pub/linux/kernel/v${KERNEL_VERSION%%.*}.x/linux-$KERNEL_VERSION.tar.xz" \
-    | tar -xJ -C "$WORK"
+  if [ ! -f "$TARBALL" ]; then
+    echo ">> fetching linux-$KERNEL_VERSION"
+    curl -fL -o "$TARBALL.tmp" \
+      "https://cdn.kernel.org/pub/linux/kernel/v${KERNEL_VERSION%%.*}.x/linux-$KERNEL_VERSION.tar.xz"
+    mv "$TARBALL.tmp" "$TARBALL"
+  fi
+  tar -xJf "$TARBALL" -C "$WORK"
+  for p in "${PATCHES[@]}"; do
+    echo ">> applying $(basename "$p")"
+    patch -d "$SRC" -p1 -s --no-backup-if-mismatch < "$p"
+  done
+  echo "$STAMP" > "$SRC/.rock5-patches"
 fi
 
 for f in $FIRMWARE; do

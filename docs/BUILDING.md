@@ -82,7 +82,9 @@ Copy with `cp --sparse=always` when moving images around, or each copy takes the
 ## 5. Updating the kernel and U-Boot prebuilts
 
 The kernel is mainline Linux (`KERNEL_VERSION` in `kernel/build-kernel.sh`), configured from defconfig + AOSP's
-`kernel/configs/w/android-6.12/android-base.config` + `kernel/rock5.config`. U-Boot, TF-A and the Rockchip DDR
+`kernel/configs/w/android-6.12/android-base.config` + `kernel/rock5.config`, with the upstream fixes in
+`kernel/patches/` applied on top (mainline commits not yet in the LTS release, each naming the commit it was
+cherry-picked from; drop one once the LTS has it). U-Boot, TF-A and the Rockchip DDR
 blob are pinned in `bootloader/build-uboot.sh`. To change any of them, edit the script or config here, then:
 
 ```sh
