@@ -1,0 +1,5 @@
+# drm_hwcomposer imports gralloc buffers through the mapper, and listens for
+# DRM hotplug uevents.
+hal_client_domain(hal_graphics_composer_default, hal_graphics_allocator)
+allow hal_graphics_composer_default hal_graphics_mapper_service:service_manager find;
+allow hal_graphics_composer_default self:netlink_kobject_uevent_socket { create bind read };

@@ -1,0 +1,6 @@
+# Every process with a GPU context loads mapper.minigbm.so (through libui and
+# Mesa), and libui first asks servicemanager whether mapper/minigbm is
+# declared, which needs find. System policy grants that only to allocator
+# clients; the service is not protected_service, so apps may have it.
+# Isolated apps have no GPU access and may find almost no services.
+allow { appdomain -isolated_app_all } hal_graphics_mapper_service:service_manager find;

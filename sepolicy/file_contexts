@@ -12,6 +12,11 @@
 /vendor/lib64/libminigbm_gralloc4_utils\.so                           u:object_r:same_process_hal_file:s0
 /vendor/lib64/libdrm\.so                                              u:object_r:same_process_hal_file:s0
 /vendor/lib64/hw/vulkan\.panfrost\.so                                 u:object_r:same_process_hal_file:s0
+# Mesa's gralloc glue (u_gralloc imapper5) uses libui's GraphicBufferMapper, so
+# vendor libui and the allocator interfaces it links are loaded into every
+# process with a GPU context, apps included.
+/vendor/lib64/libui\.so                                              u:object_r:same_process_hal_file:s0
+/vendor/lib64/android\.hardware\.graphics\.allocator@[234]\.0\.so    u:object_r:same_process_hal_file:s0
 
 # Health (BatteryService)
 /vendor/bin/hw/android\.hardware\.health-service\.example            u:object_r:hal_health_default_exec:s0
@@ -19,3 +24,11 @@
 # Optional hardware detection (Bluetooth feature list)
 /vendor/bin/init\.rock5\.hwdetect\.sh                              u:object_r:rock5_hwdetect_exec:s0
 /dev/rfkill                                                       u:object_r:rfkill_device:s0
+
+# Partitions by GPT name on the boot device (microSD fe2c0000.mmc, or eMMC
+# fe2e0000.mmc). ueventd labels each node through its by-name link; without
+# this fsck/tune2fs and vold see a plain block_device.
+/dev/block/platform/fe2[ce]0000\.mmc/by-name/system    u:object_r:system_block_device:s0
+/dev/block/platform/fe2[ce]0000\.mmc/by-name/vendor    u:object_r:system_block_device:s0
+/dev/block/platform/fe2[ce]0000\.mmc/by-name/metadata  u:object_r:metadata_block_device:s0
+/dev/block/platform/fe2[ce]0000\.mmc/by-name/userdata  u:object_r:userdata_block_device:s0

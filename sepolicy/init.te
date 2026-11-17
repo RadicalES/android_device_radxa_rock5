@@ -1,3 +1,13 @@
 # init.rock5.rc bind-mounts the feature list of optional hardware that is
 # present over its empty placeholder in /vendor/etc/permissions.
 allow init vendor_configs_file:file mounton;
+
+# init.rc enables the bootreceiver tracing instance's error_report_end event.
+# Since 6.6 tracefs creates event files on first lookup (eventfs), so opening
+# .../enable for writing is checked as creating a file in the directory.
+allow init debugfs_bootreceiver_tracing:dir { write add_name };
+
+# init.rc caps discard size on the userdata disk
+# (/dev/sys/block/by-name/userdata/queue/discard_max_bytes); the MMC hosts'
+# block sysfs is sysfs_devices_block (genfs_contexts).
+allow init sysfs_devices_block:file w_file_perms;

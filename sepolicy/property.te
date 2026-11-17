@@ -1,2 +1,9 @@
 # vendor.rock5.*: optional hardware found by init.rock5.hwdetect.sh
 vendor_internal_prop(vendor_rock5_hwdetect_prop)
+
+# vendor.mesa.*, vendor.minigbm.*: graphics debug options. Every process with
+# a GPU context or the minigbm mapper looks them up even when unset: Mesa
+# (debug.mesa.*, vendor.mesa.*, mesa.*; src/util/os_misc.c) and minigbm
+# (vendor.minigbm.debug). Isolated apps load neither.
+vendor_public_prop(vendor_graphics_debug_prop)
+get_prop({ domain -isolated_app_all }, vendor_graphics_debug_prop)

@@ -1,0 +1,2 @@
+# The software KeyMint reads ro.serialno for device attestation IDs.
+get_prop(hal_keymint_default, serialno_prop)

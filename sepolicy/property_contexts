@@ -1,1 +1,3 @@
 vendor.rock5.bluetooth    u:object_r:vendor_rock5_hwdetect_prop:s0 exact enum present absent
+vendor.mesa.              u:object_r:vendor_graphics_debug_prop:s0 prefix
+vendor.minigbm.           u:object_r:vendor_graphics_debug_prop:s0 prefix

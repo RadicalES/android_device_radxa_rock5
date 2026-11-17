@@ -1,0 +1,17 @@
+# libdrm (drmGetDevices2, used by Mesa) reads each DRM device's uevent for its
+# platform bus info: the display controller (card0) and the Mali GPU (panthor,
+# renderD128). AOSP lets GPU users read sysfs_gpu.
+genfscon sysfs /devices/platform/display-subsystem/uevent u:object_r:sysfs_gpu:s0
+genfscon sysfs /devices/platform/fb000000.gpu/uevent      u:object_r:sysfs_gpu:s0
+
+# Block devices of the microSD and eMMC hosts, for init.rc's
+# queue/discard_max_bytes write on the userdata disk.
+# (mmc_host, not mmcN: the host index follows probe order.)
+genfscon sysfs /devices/platform/fe2c0000.mmc/mmc_host u:object_r:sysfs_devices_block:s0
+genfscon sysfs /devices/platform/fe2e0000.mmc/mmc_host u:object_r:sysfs_devices_block:s0
+
+# USB 2.0 PHYs' extcon (cable state), read by system_server.
+genfscon sysfs /devices/platform/fd5d0000.syscon/fd5d0000.syscon:usb2phy@0/extcon    u:object_r:sysfs_extcon:s0
+genfscon sysfs /devices/platform/fd5d4000.syscon/fd5d4000.syscon:usb2phy@4000/extcon u:object_r:sysfs_extcon:s0
+genfscon sysfs /devices/platform/fd5d8000.syscon/fd5d8000.syscon:usb2phy@8000/extcon u:object_r:sysfs_extcon:s0
+genfscon sysfs /devices/platform/fd5dc000.syscon/fd5dc000.syscon:usb2phy@c000/extcon u:object_r:sysfs_extcon:s0
