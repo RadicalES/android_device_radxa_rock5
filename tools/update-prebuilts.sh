@@ -46,6 +46,7 @@ done
 
 dev_rev=$(git -C "$DEV" describe --always --dirty --abbrev=7)
 pin() { sed -n "s/^$1=\${$1:-\(.*\)}$/\1/p" "$DEV/bootloader/build-uboot.sh"; }
+krev=$(sed -n "s/^KERNEL_REV=\${KERNEL_REV:-\(.*\)}$/\1/p" "$DEV/kernel/build-kernel.sh")
 
 echo
 echo ">> $PREBUILT:"
@@ -57,6 +58,7 @@ Test the image on hardware, then commit in $PREBUILT, e.g.:
   Linux $(cat "$PREBUILT/version") and U-Boot $(pin UBOOT_VERSION) for the ROCK 5 family
 
   - Image, DTBs, config: kernel/build-kernel.sh from android_device_radxa_rock5 $dev_rev
+    (kernel: android_kernel_rockchip_rk3588 ${krev:0:12})
   - u-boot-rockchip.bin: bootloader/build-uboot.sh, U-Boot $(pin UBOOT_VERSION),
     TF-A $(pin TFA_VERSION), $(pin DDR_BLOB)
 

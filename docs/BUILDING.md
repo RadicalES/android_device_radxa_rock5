@@ -81,11 +81,14 @@ Copy with `cp --sparse=always` when moving images around, or each copy takes the
 
 ## 5. Updating the kernel and U-Boot prebuilts
 
-The kernel is mainline Linux (`KERNEL_VERSION` in `kernel/build-kernel.sh`), configured from defconfig + AOSP's
-`kernel/configs/w/android-6.12/android-base.config` + `kernel/rock5.config`, with the upstream fixes in
-`kernel/patches/` applied on top (mainline commits not yet in the LTS release, each naming the commit it was
-cherry-picked from; drop one once the LTS has it). U-Boot, TF-A and the Rockchip DDR
-blob are pinned in `bootloader/build-uboot.sh`. To change any of them, edit the script or config here, then:
+The kernel source is [RadicalES/android_kernel_rockchip_rk3588](https://github.com/RadicalES/android_kernel_rockchip_rk3588),
+a fork of the stable tree: branch `android-6.18` is a mainline LTS release (v6.18.63) with our patches as commits
+on top: upstream fixes not yet in the LTS release (each naming the mainline commit it was cherry-picked from;
+drop one once the LTS has it) and, later, the Android drivers mainline lacks. `kernel/build-kernel.sh` builds the
+commit pinned in `KERNEL_REV` (fetched shallow), configured from defconfig + AOSP's
+`kernel/configs/w/android-6.12/android-base.config` + `kernel/rock5.config`. To change the kernel, commit and push
+to the fork, then bump `KERNEL_REV`. To move to a new LTS release, rebase the branch onto its tag. U-Boot, TF-A and
+the Rockchip DDR blob are pinned in `bootloader/build-uboot.sh`. To change any of them, edit the script or config here, then:
 
 ```sh
 device/radxa/rock5/tools/update-prebuilts.sh            # or: ... kernel / ... uboot

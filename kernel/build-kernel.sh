@@ -4,7 +4,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #
-# Build a mainline LTS kernel for the Rock 5 family.
+# Build the kernel for the Rock 5 family: a mainline LTS release plus the
+# patches RadicalES carries (upstream backports, Android drivers), kept as
+# commits in RadicalES/android_kernel_rockchip_rk3588.
 #
 #   AOSP=/path/to/aosp-15 kernel/build-kernel.sh
 #
@@ -14,12 +16,15 @@
 
 set -euo pipefail
 
-KERNEL_VERSION=${KERNEL_VERSION:-6.18.63}
+# The kernel source: a commit of the fork's android-6.18 branch (v6.18.63 +
+# our patches). Pinned, so a build is reproducible; bump it to take changes.
+KERNEL_REPO=${KERNEL_REPO:-https://github.com/RadicalES/android_kernel_rockchip_rk3588.git}
+KERNEL_REV=${KERNEL_REV:-d1e3d82878dfe0597bc35a165c8c2608fbfc3a4b}
 AOSP=${AOSP:?set AOSP to an AOSP tree (used for clang + kernel/configs)}
 
 TOP=$(cd "$(dirname "$0")/.." && pwd)
 WORK=${WORK:-$TOP/out}
-SRC=$WORK/linux-$KERNEL_VERSION
+SRC=$WORK/linux
 BUILD=$WORK/kernel-build
 FWDIR=$WORK/firmware
 DIST=$WORK/kernel
@@ -45,35 +50,21 @@ fi
 export PATH=$CLANG_DIR/bin:$PATH
 MAKE=(make -C "$SRC" O="$BUILD" ARCH=arm64 LLVM=1 -j"$(nproc)")
 
-echo ">> kernel $KERNEL_VERSION, clang $(basename "$CLANG_DIR")"
 mkdir -p "$WORK" "$BUILD" "$FWDIR" "$DIST"
 
-# Upstream fixes not yet in this LTS release, applied in order to a fresh
-# source tree. The tree records which series it carries and is re-extracted
-# when kernel/patches/ changes.
-PATCHES=("$TOP"/kernel/patches/*.patch)
-[ -e "${PATCHES[0]}" ] || PATCHES=()
-STAMP=$(cat "${PATCHES[@]}" /dev/null | sha256sum | cut -d' ' -f1)
-if [ -d "$SRC" ] && [ "$(cat "$SRC/.rock5-patches" 2>/dev/null)" != "$STAMP" ]; then
-  echo ">> kernel/patches changed, re-extracting linux-$KERNEL_VERSION"
-  rm -rf "$SRC"
+# Fetch only the pinned commit (no history), into a git tree that is reused.
+if [ ! -d "$SRC/.git" ]; then
+  git init -q "$SRC"
+  git -C "$SRC" remote add origin "$KERNEL_REPO"
 fi
-
-TARBALL=$WORK/linux-$KERNEL_VERSION.tar.xz
-if [ ! -d "$SRC" ]; then
-  if [ ! -f "$TARBALL" ]; then
-    echo ">> fetching linux-$KERNEL_VERSION"
-    curl -fL -o "$TARBALL.tmp" \
-      "https://cdn.kernel.org/pub/linux/kernel/v${KERNEL_VERSION%%.*}.x/linux-$KERNEL_VERSION.tar.xz"
-    mv "$TARBALL.tmp" "$TARBALL"
-  fi
-  tar -xJf "$TARBALL" -C "$WORK"
-  for p in "${PATCHES[@]}"; do
-    echo ">> applying $(basename "$p")"
-    patch -d "$SRC" -p1 -s --no-backup-if-mismatch < "$p"
-  done
-  echo "$STAMP" > "$SRC/.rock5-patches"
+if [ "$(git -C "$SRC" rev-parse -q --verify HEAD 2>/dev/null)" != "$KERNEL_REV" ]; then
+  echo ">> fetching kernel $KERNEL_REV"
+  git -C "$SRC" fetch -q --depth 1 origin "$KERNEL_REV"
+  git -C "$SRC" checkout -q --force --detach FETCH_HEAD
 fi
+[ -z "$(git -C "$SRC" status --porcelain)" ] || { echo "!! $SRC has local changes"; exit 1; }
+KERNEL_VERSION=$(make -s -C "$SRC" kernelversion)
+echo ">> kernel $KERNEL_VERSION (${KERNEL_REV:0:12}), clang $(basename "$CLANG_DIR")"
 
 for f in $FIRMWARE; do
   if [ ! -f "$FWDIR/$f" ]; then
