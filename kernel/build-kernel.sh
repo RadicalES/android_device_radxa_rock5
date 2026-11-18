@@ -36,7 +36,12 @@ ANDROID_FRAG=${ANDROID_FRAG:-$AOSP/kernel/configs/w/android-6.12/android-base.co
 FIRMWARE="arm/mali/arch10.8/mali_csffw.bin rtl_nic/rtl8125b-2.fw"
 # RTL8852B / 8852BT USB Bluetooth (the 8852B needs no config file)
 FIRMWARE+=" rtl_bt/rtl8852bu_fw.bin rtl_bt/rtl8852btu_fw.bin"
+# RTL8852BE PCIe Wi-Fi
+FIRMWARE+=" rtw89/rtw8852b_fw-1.bin"
 FW_URL=https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain
+# cfg80211's signed wireless regulatory database, from wireless-regdb
+REGDB="regulatory.db regulatory.db.p7s"
+REGDB_URL=https://git.kernel.org/pub/scm/linux/kernel/git/wens/wireless-regdb.git/plain
 
 missing=""
 [ -e /usr/include/openssl/bio.h ] || missing+=" libssl-dev"
@@ -66,13 +71,16 @@ fi
 KERNEL_VERSION=$(make -s -C "$SRC" kernelversion)
 echo ">> kernel $KERNEL_VERSION (${KERNEL_REV:0:12}), clang $(basename "$CLANG_DIR")"
 
-for f in $FIRMWARE; do
-  if [ ! -f "$FWDIR/$f" ]; then
-    echo ">> fetching firmware $f"
-    mkdir -p "$FWDIR/$(dirname "$f")"
-    curl -fsL -o "$FWDIR/$f" "$FW_URL/$f"
+fetch() {  # fetch <base url> <file>
+  if [ ! -f "$FWDIR/$2" ]; then
+    echo ">> fetching firmware $2"
+    mkdir -p "$FWDIR/$(dirname "$2")"
+    curl -fsL -o "$FWDIR/$2" "$1/$2"
   fi
-done
+}
+for f in $FIRMWARE; do fetch "$FW_URL" "$f"; done
+for f in $REGDB; do fetch "$REGDB_URL" "$f"; done
+FIRMWARE+=" $REGDB"
 
 cat > "$BUILD/firmware.config" <<EOF
 CONFIG_EXTRA_FIRMWARE="$FIRMWARE"
