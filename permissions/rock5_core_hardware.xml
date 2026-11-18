@@ -25,16 +25,14 @@
 <!-- Rock 5: AOSP's tablet_core_hardware.xml without android.hardware.bluetooth.
      Bluetooth is optional (M.2 E-key module), so its features live in
      rock5_bluetooth.xml and are enabled at boot only when an adapter is
-     present (init.rock5.hwdetect.sh). -->
+     present (init.rock5.hwdetect.sh).
+     Also without the location, compass and accelerometer features: the board
+     has no location provider and no sensors. -->
 <permissions>
     <!-- This is Android and fully CTS compatible.  Basically this is for CTS tests to use. -->
     <feature name="android.software.cts" />
 
     <feature name="android.hardware.audio.output" />
-    <feature name="android.hardware.location" />
-    <feature name="android.hardware.location.network" />
-    <feature name="android.hardware.sensor.compass" />
-    <feature name="android.hardware.sensor.accelerometer" />
     <feature name="android.hardware.touchscreen" />
     <feature name="android.hardware.touchscreen.multitouch" />
     <feature name="android.hardware.touchscreen.multitouch.distinct" />
