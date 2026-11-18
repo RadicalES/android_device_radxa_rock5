@@ -1,0 +1,12 @@
+// Copyright (C) 2026 RadicalES
+// SPDX-License-Identifier: Apache-2.0
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+runtime_resource_overlay {
+    name: "Rock5ConnectivityOverlay",
+    sdk_version: "current",
+    vendor: true,
+}

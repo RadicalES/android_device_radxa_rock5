@@ -83,6 +83,10 @@ PRODUCT_PACKAGES += \
 # Overlays: settings defaults
 DEVICE_PACKAGE_OVERLAYS += $(COMMON_PATH)/overlay
 
+# Connectivity (runtime overlay: the module is updatable): eth0 is the uplink
+PRODUCT_PACKAGES += \
+    Rock5ConnectivityOverlay
+
 # Device features (app widgets, etc.). Launcher3 crashes without
 # android.software.app_widgets: AppWidgetManager is null. AOSP's tablet list
 # minus Bluetooth, which is optional hardware (below).

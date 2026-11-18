@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2026 RadicalES
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <!-- eth0, the on-board RTL8125B, is the uplink. Ethernet tethering takes the
+         first interface without configured capabilities and puts it in server
+         mode; unconfigured, that is eth0, and turning tethering on would take the
+         board off its network. Configured here, tethering can only use a second
+         adapter (e.g. USB Ethernet).
+         A configured interface gets only the capabilities listed, so these are
+         the defaults an unconfigured one gets: NOT_METERED (11), INTERNET (12),
+         NOT_RESTRICTED (13), TRUSTED (14), NOT_VPN (15), NOT_VCN_MANAGED (28),
+         NOT_BANDWIDTH_CONSTRAINED (37; the default request needs it).
+         No IP config: DHCP, or what the user sets in Settings. -->
+    <string-array translatable="false" name="config_ethernet_interfaces">
+        <item>eth0;11,12,13,14,15,28,37</item>
+    </string-array>
+</resources>
