@@ -67,3 +67,5 @@ TARGET_VENDOR_PROP += $(COMMON_PATH)/vendor.prop
 
 # SELinux (still permissive via androidboot.selinux; labels are needed regardless)
 BOARD_VENDOR_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy
+# Lights HAL for HDMI monitors (DDC/CI brightness)
+BOARD_VENDOR_SEPOLICY_DIRS += hardware/radicales/lights/ddc/sepolicy

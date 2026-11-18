@@ -15,3 +15,7 @@ genfscon sysfs /devices/platform/fd5d0000.syscon/fd5d0000.syscon:usb2phy@0/extco
 genfscon sysfs /devices/platform/fd5d4000.syscon/fd5d4000.syscon:usb2phy@4000/extcon u:object_r:sysfs_extcon:s0
 genfscon sysfs /devices/platform/fd5d8000.syscon/fd5d8000.syscon:usb2phy@8000/extcon u:object_r:sysfs_extcon:s0
 genfscon sysfs /devices/platform/fd5dc000.syscon/fd5dc000.syscon:usb2phy@c000/extcon u:object_r:sysfs_extcon:s0
+
+# DRM connectors (status, ddc link), read by the DDC/CI lights HAL. A prefix,
+# so card0's own uevent keeps its sysfs_gpu label.
+genfscon sysfs /devices/platform/display-subsystem/drm/card0/card0- u:object_r:sysfs_drm_connector:s0

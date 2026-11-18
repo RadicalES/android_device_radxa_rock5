@@ -1,0 +1,55 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (C) 2026 RadicalES
+//
+// ROCK 5B: run HDMI0's DDC lines on a bit-banged I2C bus (i2c-gpio).
+// The HDMI controller's own I2C master only does EDID-style register reads;
+// DDC/CI (monitor control, e.g. brightness) needs plain multi-byte I2C
+// transfers, which it cannot do (dw-hdmi-qp refuses address 0x37). With the
+// pins muxed as GPIOs, i2c-gpio carries both EDID and DDC/CI, and hdmi0 uses
+// it through ddc-i2c-bus (a dw-hdmi-qp option carried in our kernel fork).
+//
+// Pins: GPIO4_B7 = SCL, GPIO4_C0 = SDA (hdmim0_tx0_scl/sda). GPIO flags 6 =
+// GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN; the board has the DDC pull-ups.
+// Applied by U-Boot (extlinux fdtoverlays).
+
+/dts-v1/;
+/plugin/;
+
+/ {
+	fragment@0 {
+		target = <&pinctrl>;
+		__overlay__ {
+			hdmi0-ddc-gpio {
+				hdmi0_ddc_gpio_pins: hdmi0-ddc-gpio-pins {
+					rockchip,pins =
+						<4 15 0 &pcfg_pull_none>,
+						<4 16 0 &pcfg_pull_none>;
+				};
+			};
+		};
+	};
+
+	fragment@1 {
+		target-path = "/";
+		__overlay__ {
+			hdmi0_ddc: i2c-hdmi0-ddc {
+				compatible = "i2c-gpio";
+				scl-gpios = <&gpio4 15 6>;
+				sda-gpios = <&gpio4 16 6>;
+				i2c-gpio,delay-us = <5>;	/* about 100 kHz */
+				pinctrl-names = "default";
+				pinctrl-0 = <&hdmi0_ddc_gpio_pins>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+			};
+		};
+	};
+
+	fragment@2 {
+		target = <&hdmi0>;
+		__overlay__ {
+			pinctrl-0 = <&hdmim0_tx0_cec &hdmim0_tx0_hpd>;
+			ddc-i2c-bus = <&hdmi0_ddc>;
+		};
+	};
+};

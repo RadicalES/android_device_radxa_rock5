@@ -70,6 +70,11 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     android.hardware.health-service.example
 
+# Lights: HDMI monitors have no backlight device; the backlight level goes to
+# the monitor over DDC/CI (hardware/radicales). See rock5b/overlays/hdmi0-ddc-gpio.dtso.
+PRODUCT_PACKAGES += \
+    android.hardware.lights-service.ddc
+
 # Power: AOSP example HAL. HintManagerService in system_server aborts the boot
 # without an IPower instance (null SupportInfo).
 PRODUCT_PACKAGES += \

@@ -1,5 +1,8 @@
 # GPU (Panthor) and display
 /dev/dri/*                0666   system     graphics
 
+# Lights HAL (group system) sets the monitor's brightness over HDMI DDC/CI
+/dev/i2c-*                0660   root       system
+
 # Bluetooth HAL (user bluetooth) unblocks the adapter through rfkill
 /dev/rfkill               0660   bluetooth  bluetooth
