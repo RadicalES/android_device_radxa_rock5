@@ -16,7 +16,8 @@
 # Partition names must match ramdisk/fstab.rock5 (mounted by-name).
 #
 #   sector 64      u-boot-rockchip.bin (boot ROM offset)
-#   p1  boot       FAT: Image, DTB, ramdisk.img, extlinux/extlinux.conf
+#   p1  boot       FAT: Image, DTB, overlays/*.dtbo, ramdisk.img,
+#                  extlinux/extlinux.conf
 #                  (built here; plain AOSP has no hook to replace boot.img)
 #   p2  system     ext4
 #   p3  vendor     ext4
@@ -36,7 +37,7 @@ done
 
 # Board settings come from the build, so they match BoardConfig*.mk
 eval "$(cd "$TOP" && build/soong/soong_ui.bash --dumpvars-mode \
-  --vars="BOARD_KERNEL_CMDLINE ROCK5_DTB KERNEL_PATH" 2>/dev/null)"
+  --vars="BOARD_KERNEL_CMDLINE ROCK5_DTB ROCK5_DTBOS KERNEL_PATH" 2>/dev/null)"
 [ -n "${ROCK5_DTB:-}" ] && [ -n "${BOARD_KERNEL_CMDLINE:-}" ] || die "could not read board variables"
 DTB_FILE=$TOP/$KERNEL_PATH/$ROCK5_DTB
 [ -f "$DTB_FILE" ] || die "missing $DTB_FILE"
@@ -90,14 +91,32 @@ dd if="$UBOOT" of="$IMG" seek=64 conv=notrunc status=none
 TMP=$(mktemp -d "$OUT/mkimg.XXXXXX")   # next to the output, not /tmp
 trap 'rm -rf "$TMP"' EXIT
 
-echo ">> boot ($ROCK5_DTB)"
-sed -e "s|@DTB@|$ROCK5_DTB|" -e "s|@CMDLINE@|$BOARD_KERNEL_CMDLINE|" \
+echo ">> boot ($ROCK5_DTB${ROCK5_DTBOS:+ + ${ROCK5_DTBOS}})"
+# Device-tree overlays (ROCK5_DTBOS, BoardConfig.mk), compiled with AOSP's dtc
+DTC=$TOP/prebuilts/misc/linux-x86/dtc/dtc
+mkdir -p "$TMP/overlays"
+FDTOVERLAYS=
+for src in ${ROCK5_DTBOS:-}; do
+  dtbo=$(basename "${src%.dtso}").dtbo
+  "$DTC" -q -@ -I dts -O dtb -o "$TMP/overlays/$dtbo" "$TOP/device/radxa/rock5/$src" \
+    || die "dtc failed on $src"
+  FDTOVERLAYS="$FDTOVERLAYS /overlays/$dtbo"
+done
+if [ -n "$FDTOVERLAYS" ]; then
+  OVL_SED="s|^@FDTOVERLAYS@\$|    fdtoverlays$FDTOVERLAYS|"
+else
+  OVL_SED="/^@FDTOVERLAYS@\$/d"
+fi
+sed -e "s|@DTB@|$ROCK5_DTB|" -e "s|@CMDLINE@|$BOARD_KERNEL_CMDLINE|" -e "$OVL_SED" \
   "$TOP/device/radxa/rock5/boot/extlinux.conf" > "$TMP/extlinux.conf"
 mkfs.fat -F 32 -n BOOT -C "$TMP/boot.vfat" $((BOOT * 1024)) >/dev/null
-mmd -i "$TMP/boot.vfat" ::extlinux
+mmd -i "$TMP/boot.vfat" ::extlinux ::overlays
 mcopy -i "$TMP/boot.vfat" "$OUT/kernel" ::Image
 mcopy -i "$TMP/boot.vfat" "$DTB_FILE" "$OUT/ramdisk.img" ::
 mcopy -i "$TMP/boot.vfat" "$TMP/extlinux.conf" ::extlinux/extlinux.conf
+if [ -n "$FDTOVERLAYS" ]; then
+  mcopy -i "$TMP/boot.vfat" "$TMP"/overlays/*.dtbo ::overlays/
+fi
 put "$TMP/boot.vfat" $BOOT_START
 rm -f "$TMP/boot.vfat"
 
