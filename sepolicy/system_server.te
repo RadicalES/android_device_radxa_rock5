@@ -1,0 +1,5 @@
+# Wi-Fi without a vendor Wi-Fi HAL: the framework takes the station interface
+# name from the wifi.interface property (wifi_hal_prop), which stock policy
+# lets only the HAL and wificond touch, since devices with a HAL get the name
+# from it instead.
+get_prop(system_server, wifi_hal_prop)
