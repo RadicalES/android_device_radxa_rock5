@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2026 RadicalES
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <!-- No modem: hide the SIM / mobile network entries. With them shown, the
+         Internet page's subscriptions controller starts a Wi-Fi tracker, which
+         crashes Settings on a board without Wi-Fi (null WifiManager). -->
+    <bool name="config_show_sim_info">false</bool>
+
+    <!-- One Ethernet port, and it is the uplink (see ConnectivityOverlay):
+         nothing to tether over. -->
+    <bool name="config_show_ethernet_tethering">false</bool>
+</resources>

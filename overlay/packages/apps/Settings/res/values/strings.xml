@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2026 RadicalES
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <!-- The board builds as a tablet (PRODUCT_CHARACTERISTICS), the nearest
+         product type Settings has for a large screen without a modem, but it is
+         not one. Neutral wording for the tethering entries. -->
+    <string name="usb_tethering_subtext" product="tablet">Share this device’s internet connection via USB</string>
+    <string name="bluetooth_tethering_subtext" product="tablet">Share this device’s internet connection via Bluetooth</string>
+    <string name="ethernet_tethering_subtext" product="tablet">Share this device’s internet connection via Ethernet</string>
+
+    <!-- No modem: the stock intro speaks of the mobile data connection. -->
+    <string name="tethering_footer_info">Use hotspot and tethering to share this device’s internet connection with other devices. Apps can also create a hotspot to share content with nearby devices.</string>
+</resources>
