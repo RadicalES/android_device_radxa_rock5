@@ -2,3 +2,11 @@
 ro.soc.manufacturer=Rockchip
 ro.soc.model=RK3588
 
+
+# Display (drm_hwcomposer): keep each HDMI mode in its own config group.
+# By default it groups modes by resolution, which lets SurfaceFlinger drop a
+# 1080p60 output to 1080p24 whenever little is drawing (e.g. while typing).
+# On HDMI every refresh-rate change is a full mode set, so the monitor blanks.
+# Separate groups stop those switches (SurfaceFlinger does not switch groups
+# on its own); apps can still request a mode explicitly.
+ro.vendor.hwc.drm.use_config_groups=0
