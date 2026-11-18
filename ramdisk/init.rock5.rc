@@ -8,15 +8,23 @@ on late-fs
     mount_all /vendor/etc/fstab.rock5 --late
 
 on post-fs-data
-    # Optional hardware (Bluetooth): declare its features only if present.
+    # Optional hardware (Bluetooth, Wi-Fi): declare its features only if present.
     # Blocking, and before zygote-start, so system_server sees the result.
     exec_start vendor.rock5-hwdetect
+
+    # wpa_supplicant's config and control sockets (-O in its service entry)
+    mkdir /data/vendor/wifi 0770 wifi wifi
+    mkdir /data/vendor/wifi/wpa 0770 wifi wifi
+    mkdir /data/vendor/wifi/wpa/sockets 0770 wifi wifi
 
 # Features of optional hardware found by init.rock5.hwdetect.sh. init.rc
 # queues load_persist_props_action during post-fs-data, so this runs after
 # the detection above and before zygote-start.
 on load_persist_props_action && property:vendor.rock5.bluetooth=present
     mount none /vendor/etc/rock5/rock5_bluetooth.xml /vendor/etc/permissions/rock5_bluetooth.xml bind
+
+on load_persist_props_action && property:vendor.rock5.wifi=present
+    mount none /vendor/etc/rock5/rock5_wifi.xml /vendor/etc/permissions/rock5_wifi.xml bind
 
 # Bring-up: suspend is not supported on this board yet, and Android tries it
 # as soon as it boots and nothing holds a wakelock. Hold one for good.

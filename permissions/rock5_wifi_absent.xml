@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 RadicalES
+     SPDX-License-Identifier: Apache-2.0 -->
+<!-- Placeholder installed as /vendor/etc/permissions/rock5_wifi.xml: no Wi-Fi
+     features. When init.rock5.hwdetect.sh finds a Wi-Fi adapter, init.rock5.rc
+     bind-mounts the real feature list (/vendor/etc/rock5/rock5_wifi.xml) over
+     it, before system_server reads features. -->
+<permissions />

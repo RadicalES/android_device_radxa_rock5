@@ -1,0 +1,26 @@
+// Copyright (C) 2026 RadicalES
+// SPDX-License-Identifier: Apache-2.0
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+// AOSP's wpa_supplicant template, installed where the supplicant looks for it
+// (/vendor/etc/wifi/wpa_supplicant.conf); it copies it to /data/vendor/wifi/wpa
+// on first use.
+prebuilt_etc {
+    name: "wpa_supplicant.conf.rock5",
+    src: ":wpa_supplicant_template.conf",
+    filename: "wpa_supplicant.conf",
+    relative_install_path: "wifi",
+    vendor: true,
+}
+
+// Supplicant settings for this board (see the file).
+prebuilt_etc {
+    name: "wpa_supplicant_overlay.conf.rock5",
+    src: "wpa_supplicant_overlay.conf",
+    filename: "wpa_supplicant_overlay.conf",
+    relative_install_path: "wifi",
+    vendor: true,
+}

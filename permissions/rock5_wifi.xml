@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 RadicalES
+     SPDX-License-Identifier: Apache-2.0 -->
+<!-- Wi-Fi features (station and hotspot). Installed as
+     /vendor/etc/rock5/rock5_wifi.xml and enabled only when an adapter is
+     present (see rock5_wifi_absent.xml). -->
+<permissions>
+    <feature name="android.hardware.wifi" />
+</permissions>

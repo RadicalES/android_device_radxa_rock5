@@ -107,6 +107,23 @@ PRODUCT_COPY_FILES += \
     $(COMMON_PATH)/permissions/rock5_bluetooth.xml:$(TARGET_COPY_OUT_VENDOR)/etc/rock5/rock5_bluetooth.xml \
     $(COMMON_PATH)/ramdisk/init.rock5.hwdetect.sh:$(TARGET_COPY_OUT_VENDOR)/bin/init.rock5.hwdetect.sh
 
+# Wi-Fi: optional too (PCIe, the same M.2 module's WLAN side), see BoardConfigCommon.mk.
+# Features are enabled at boot only when init.rock5.hwdetect.sh finds an
+# adapter, like Bluetooth; the framework starts the supplicant only then.
+PRODUCT_PACKAGES += \
+    hostapd \
+    wpa_supplicant \
+    wpa_supplicant.conf.rock5 \
+    wpa_supplicant_overlay.conf.rock5
+
+PRODUCT_PACKAGES_DEBUG += \
+    hostapd_cli \
+    wpa_cli
+
+PRODUCT_COPY_FILES += \
+    $(COMMON_PATH)/permissions/rock5_wifi_absent.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/rock5_wifi.xml \
+    $(COMMON_PATH)/permissions/rock5_wifi.xml:$(TARGET_COPY_OUT_VENDOR)/etc/rock5/rock5_wifi.xml
+
 # Ethernet
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.ethernet.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.ethernet.xml

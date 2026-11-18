@@ -33,6 +33,15 @@ BOARD_KERNEL_CMDLINE := console=tty0 console=ttyS2,1500000 earlycon no_console_s
 BOARD_KERNEL_CMDLINE += androidboot.hardware=rock5 androidboot.boot_devices=fe2c0000.mmc
 BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 
+# Wi-Fi (optional, e.g. the RTL8852BE on an M.2 E-key module): a mac80211
+# driver (rtw89) that AOSP's wpa_supplicant and hostapd drive over nl80211,
+# with no driver-specific private commands (stub libs). No vendor Wi-Fi HAL:
+# the framework then uses wlan0 directly, for Wi-Fi or hotspot (not both at once).
+BOARD_WPA_SUPPLICANT_DRIVER := NL80211
+BOARD_HOSTAPD_DRIVER := NL80211
+WPA_SUPPLICANT_VERSION := VER_0_8_X
+WIFI_HIDL_UNIFIED_SUPPLICANT_SERVICE_RC_ENTRY := true
+
 # Manifest
 DEVICE_MANIFEST_FILE := $(COMMON_PATH)/manifest.xml
 

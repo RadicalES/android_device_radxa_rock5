@@ -13,6 +13,9 @@
 # Bluetooth: an M.2 E-key module (e.g. RTL8852BE) is a USB Bluetooth adapter.
 # Its features are declared only if the kernel has an HCI device, so a board
 # without one has no Bluetooth stack at all rather than one that cannot start.
+#
+# Wi-Fi: the same module's WLAN side is a PCIe device; its built-in driver
+# has registered a wireless PHY long before this runs.
 
 log() { echo "rock5-hwdetect: $*" > /dev/kmsg; }
 
@@ -35,5 +38,13 @@ if has_hci; then
 else
   setprop vendor.rock5.bluetooth absent
   log "bluetooth: no adapter"
+fi
+
+if ls /sys/class/ieee80211/ 2>/dev/null | grep -q '^phy'; then
+  setprop vendor.rock5.wifi present
+  log "wifi: adapter present"
+else
+  setprop vendor.rock5.wifi absent
+  log "wifi: no adapter"
 fi
 exit 0
