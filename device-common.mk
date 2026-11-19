@@ -59,6 +59,13 @@ PRODUCT_COPY_FILES += \
     $(COMMON_PATH)/camera/external/external_camera_config.xml:$(TARGET_COPY_OUT_VENDOR)/etc/external_camera_config.xml \
     frameworks/native/data/etc/android.hardware.camera.external.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.camera.external.xml
 
+# Media: the software codecs (swcodec APEX) as an AIDL Codec2 service. This
+# board has no hwservicemanager, and the codec client only lists AIDL Codec2
+# services when selected (the default is HIDL): without it MediaCodecList is
+# empty and no audio or video decodes.
+PRODUCT_VENDOR_PROPERTIES += \
+    media.c2.hal.selection=aidl
+
 # Audio: AOSP reference AIDL HAL (stub primary module, remote submix, USB) so
 # audioserver can start; AudioFlinger crashes without any audio HAL.
 PRODUCT_PACKAGES += \
@@ -140,6 +147,12 @@ PRODUCT_COPY_FILES += \
 # Ethernet
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.ethernet.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.ethernet.xml
+
+# USB host: without the feature SystemServer starts no USB service, and
+# UsbManager is null for apps. Host only: the USB-C device side (gadget) is not
+# set up, so no android.hardware.usb.accessory.
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.usb.host.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.usb.host.xml
 
 # Ramdisk
 PRODUCT_COPY_FILES += \

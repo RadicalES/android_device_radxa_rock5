@@ -1,0 +1,5 @@
+# The external (USB) camera HAL imports and locks the app's stream buffers
+# through gralloc: it looks up the allocator and minigbm's stable-C mapper
+# (mapper/minigbm, see hal_graphics_mapper.te).
+hal_client_domain(hal_camera_default, hal_graphics_allocator)
+allow hal_camera_default hal_graphics_mapper_service:service_manager find;
