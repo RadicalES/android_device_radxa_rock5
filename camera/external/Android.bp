@@ -1,0 +1,39 @@
+//
+// Copyright (C) 2026 RadicalES
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+// External (UVC) camera provider, AOSP's AIDL service packaged as a vendor
+// APEX (as raspberry-vanilla does for the Pi 5).
+
+prebuilt_etc {
+    name: "android.hardware.camera.provider-V1-external-service.rc.rock5",
+    src: "android.hardware.camera.provider-V1-external-service.rc",
+    filename: "android.hardware.camera.provider-V1-external-service.rc",
+    installable: false,
+}
+
+prebuilt_etc {
+    name: "android.hardware.camera.provider-V1-external-service.xml.rock5",
+    src: "android.hardware.camera.provider-V1-external-service.xml",
+    filename: "android.hardware.camera.provider-V1-external-service.xml",
+    sub_dir: "vintf",
+    installable: false,
+}
+
+apex {
+    name: "com.android.hardware.camera.external.rock5",
+    manifest: "apex_manifest.json",
+    file_contexts: "apex_file_contexts",
+    key: "com.android.hardware.key",
+    certificate: ":com.android.hardware.certificate",
+    updatable: false,
+    vendor: true,
+    binaries: [
+        "android.hardware.camera.provider-V1-external-service",
+    ],
+    prebuilts: [
+        "android.hardware.camera.provider-V1-external-service.rc.rock5",
+        "android.hardware.camera.provider-V1-external-service.xml.rock5",
+    ],
+}

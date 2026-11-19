@@ -30,6 +30,9 @@ does for the Raspberry Pi. raspberry-vanilla's `device/brcm/rpi5` tree is the st
    - [x] Mesa PanVK (26.0.0) replaces SwiftShader: ANGLE runs GLES on Vulkan on the Mali-G610 (see "Mesa" below)
 2. Ethernet, USB, adb, audio over HDMI.
 3. UVC cameras (external camera HAL), hardware video decode (`v4l2_codec2`/hantro, rkvdec).
+   - [x] UVC cameras: AOSP's external camera provider as a vendor APEX (`camera/external`), stock
+     `external_camera_config.xml` (a product may replace it, e.g. with per-camera `<Sensor>` facing and
+     orientation); hardware-tested with a USB camera on the ROCK 5B
 4. More boards; eMMC/NVMe boot.
 
 ## Layout

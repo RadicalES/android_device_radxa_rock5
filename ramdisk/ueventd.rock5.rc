@@ -6,3 +6,7 @@
 
 # Bluetooth HAL (user bluetooth) unblocks the adapter through rfkill
 /dev/rfkill               0660   bluetooth  bluetooth
+
+# External (UVC) camera HAL runs as cameraserver, group camera
+/dev/video*               0660   system     camera
+/dev/media*               0660   system     camera

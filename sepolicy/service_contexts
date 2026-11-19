@@ -4,3 +4,6 @@ mapper/minigbm      u:object_r:hal_graphics_mapper_service:s0
 
 # The software gatekeeper's shared-secret instance (see keystore.te).
 android.hardware.security.sharedsecret.ISharedSecret/gatekeeper u:object_r:hal_gatekeeper_service:s0
+
+# External (UVC) camera provider; AOSP labels only internal/0 and virtual/0
+android.hardware.camera.provider.ICameraProvider/external/0   u:object_r:hal_camera_service:s0

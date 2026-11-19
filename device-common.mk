@@ -51,6 +51,14 @@ PRODUCT_SYSTEM_PROPERTIES += \
     ro.logd.size=16M \
     persist.logd.logpersistd=logcatd
 
+# Camera: USB (UVC) cameras through AOSP's external camera HAL
+PRODUCT_PACKAGES += \
+    com.android.hardware.camera.external.rock5
+
+PRODUCT_COPY_FILES += \
+    $(COMMON_PATH)/camera/external/external_camera_config.xml:$(TARGET_COPY_OUT_VENDOR)/etc/external_camera_config.xml \
+    frameworks/native/data/etc/android.hardware.camera.external.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.camera.external.xml
+
 # Audio: AOSP reference AIDL HAL (stub primary module, remote submix, USB) so
 # audioserver can start; AudioFlinger crashes without any audio HAL.
 PRODUCT_PACKAGES += \

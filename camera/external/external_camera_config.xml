@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2021 The Android Open Source Project
+     Copyright (C) 2026 RadicalES
+
+     SPDX-License-Identifier: Apache-2.0
+
+     External (UVC) camera HAL configuration, stock defaults. The board has no
+     internal V4L2 capture devices, so nothing is ignored. Cameras report
+     ANDROID_LENS_FACING_EXTERNAL and orientation 0; a product can override this
+     file with per-camera <Sensor><Position id value orientation/> entries
+     inside <Device>.
+-->
+<ExternalCamera>
+    <Provider>
+        <CameraIdOffset>100</CameraIdOffset>
+    </Provider>
+    <!-- See ExternalCameraUtils.cpp for the defaults of the settings below -->
+    <Device>
+        <!-- Max JPEG buffer size in bytes -->
+        <MaxJpegBufferSize bytes="3145728"/> <!-- 3MB (~= 1080p YUV420) -->
+        <!-- Size of the v4l2 buffer queue when streaming >= 30fps -->
+        <NumVideoBuffers count="4"/>
+        <!-- Size of the v4l2 buffer queue when streaming < 30fps -->
+        <NumStillBuffers count="2"/>
+        <!-- Maximum fps per output size. Sizes larger than the last entry are
+             not supported; width/height must increase, fpsBound decrease. -->
+        <FpsList>
+            <Limit width="640" height="480" fpsBound="30.0"/>
+            <Limit width="1280" height="720" fpsBound="15.0"/>
+            <Limit width="1920" height="1080" fpsBound="10.0"/>
+        </FpsList>
+    </Device>
+</ExternalCamera>
