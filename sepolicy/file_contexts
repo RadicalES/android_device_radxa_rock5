@@ -3,6 +3,8 @@
 
 # DRM/KMS (rockchip-drm) and GPU (panthor) nodes
 /dev/dri(/.*)?                                                        u:object_r:gpu_device:s0
+# NPU (Rocket accel driver): Mesa drives it from inside the app, like the GPU
+/dev/accel(/.*)?                                                      u:object_r:gpu_device:s0
 
 # Graphics: minigbm gralloc, drm_hwcomposer, Mesa PanVK
 /vendor/bin/hw/android\.hardware\.graphics\.allocator-service\.minigbm u:object_r:hal_graphics_allocator_default_exec:s0

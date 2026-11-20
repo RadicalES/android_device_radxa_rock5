@@ -1,6 +1,12 @@
 # GPU (Panthor) and display
 /dev/dri/*                0666   system     graphics
 
+# NPU (Rocket): /dev/accel/accel0 as Mesa expects, not ueventd's default /dev/accel0
+subsystem accel
+    devname uevent_devpath
+    dirname /dev/accel
+/dev/accel/*              0666   system     graphics
+
 # Lights HAL (group system) sets the monitor's brightness over HDMI DDC/CI
 /dev/i2c-*                0660   root       system
 
