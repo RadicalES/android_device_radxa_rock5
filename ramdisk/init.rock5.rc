@@ -1,6 +1,13 @@
 on init
     symlink /sdcard /storage/sdcard0
 
+    # RK3588: CPUs 0-3 are Cortex-A55, 4-7 Cortex-A76. init.rc gives every
+    # cpuset all CPUs; keep background work on the A55s so the A76s stay free
+    # for what the user is looking at.
+    write /dev/cpuset/background/cpus 0-3
+    write /dev/cpuset/system-background/cpus 0-3
+    write /dev/cpuset/restricted/cpus 0-3
+
 on fs
     mount_all /vendor/etc/fstab.rock5 --early
 
