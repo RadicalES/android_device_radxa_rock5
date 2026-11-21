@@ -82,3 +82,53 @@ big-core sensor levelled off at 54 °C, far below the trip points: the CPU does 
 
 Measure on a quiet board. An earlier 10-minute run, with the kiosk app on the device active at the same
 time, gave a 488 ms median at the same clocks and temperatures: other work on the A76s, not heat.
+
+## NPU (Rocket + Teflon)
+
+The RK3588's three NPU cores run under the mainline Rocket driver (`DRM_ACCEL_ROCKET`), as
+`/dev/accel/accel0`. Mesa's Teflon TFLite delegate drives it from inside the app, the same way Mesa
+drives the GPU, so the image carries no closed binaries. Tracking: #6 (kernel), #4 (Mesa), #7 (apps).
+
+### In the image
+
+- `/vendor/lib64/libteflon.so`: Teflon built from the same Mesa 26.0 as PanVK (`RadicalES/android_external_mesa`,
+  Rocket gallium driver plus `-Dteflon=true`; `tools/mesa/regen-android-bp.sh` and
+  `tools/mesa/n2s-rocket-teflon.patch` generate its Soong build).
+- `/vendor/etc/public.libraries.txt` lists it, so apps can load it by name. It is labelled `vendor_public_lib_file`,
+  the AOSP type apps may map. Its vendor dependencies (`libdrm`, `libcutils`, `libhardware`, `libz`) are already
+  `same_process_hal_file` for PanVK.
+- `/dev/accel/accel0` is `0666 system graphics`, labelled `gpu_device` like `/dev/dri`, which apps may already open.
+
+An app loads it as a LiteRT external delegate. Teflon exports the standard delegate plugin entry points,
+`tflite_plugin_create_delegate` and `tflite_plugin_destroy_delegate`, so native code can `dlopen("libteflon.so")`
+and add the returned `TfLiteDelegate` to its interpreter. LiteRT's external-delegate wrapper does the same, and so
+does `benchmark_model --external_delegate_path`.
+
+Teflon takes int8-quantized models only. Ops it does not support run on the CPU, and each switch between
+the NPU and the CPU costs time, so check the partition count that LiteRT logs (`Replacing N out of M node(s)`).
+
+### First result
+
+MobileNet V1 1.0 224 int8 (`mobilenet_v1_1.0_224_quant.tflite`), `benchmark_model` run as `shell` with SELinux
+enforcing, pinned to the A76s, 100 runs:
+
+| Path | Nodes on the NPU | Median / p95 (ms) |
+|---|---|---|
+| NPU, `--external_delegate_path=/vendor/lib64/libteflon.so` | 28 of 31 (2 delegate kernels) | 12.42 / 12.77 |
+| CPU, LiteRT XNNPACK, A76 x4 | none | 16.88 / 16.92 |
+
+No avc denials during the run.
+
+### The NPU clock
+
+The NPU runs at **200 MHz**. The upstream device tree sets `assigned-clock-rates = <200000000>` and has no OPP
+table or devfreq for it, as of mainline 7.4. Rockchip's BSP kernel scales it with an OPP table, up to 1 GHz. At 200 MHz, MobileNet takes only
+27 % less time on the NPU than on the four A76s. Raising the clock needs an OPP table with the
+matching `vdd_npu_s0` voltages (it is at 800 mV now). That is a separate step: see #7.
+
+### Still to do
+
+- SCRFD-10G and ArcFace as int8 TFLite models (the reference models are fp32 ONNX), with op coverage and
+  accuracy against the CPU.
+- A way for apps to detect the NPU (a vendor property or system feature).
+- A check that an app can load `libteflon.so` under enforcing (so far only `shell` can).
