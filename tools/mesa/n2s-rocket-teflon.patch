@@ -1,0 +1,43 @@
+diff --git a/scripts/desktop/mesa3d/panvk/gen-ninja.sh b/scripts/desktop/mesa3d/panvk/gen-ninja.sh
+index 36763c6..ddd2457 100644
+--- a/scripts/desktop/mesa3d/panvk/gen-ninja.sh
++++ b/scripts/desktop/mesa3d/panvk/gen-ninja.sh
+@@ -34,7 +34,8 @@ meson setup \
+     -Dcpp_rtti=false \
+     -Dtools= \
+     -Dvulkan-drivers=panfrost \
+-    -Dgallium-drivers= \
++    -Dgallium-drivers=rocket \
++    -Dteflon=true \
+     -Dvideo-codecs= \
+     -Dgles1=disabled \
+     -Dgles2=disabled \
+diff --git a/src/project/mesa3d_desktop.rs b/src/project/mesa3d_desktop.rs
+index 8a119ff..bffb4fe 100644
+--- a/src/project/mesa3d_desktop.rs
++++ b/src/project/mesa3d_desktop.rs
+@@ -190,7 +190,7 @@ soong_namespace {
+                         let prev_out = outs.last().unwrap();
+                         let new_out = path_to_string(Path::new(&prefix).join(prev_out));
+                         cmd_suffix = cmd_suffix
+-                            + "; cp $(location "
++                            + " && cp $(location "
+                             + prev_out
+                             + ") $(location "
+                             + &new_out
+diff --git a/src/project/mesa3d_desktop_panvk.rs b/src/project/mesa3d_desktop_panvk.rs
+index d6f0ae7..0b1c29a 100644
+--- a/src/project/mesa3d_desktop_panvk.rs
++++ b/src/project/mesa3d_desktop_panvk.rs
+@@ -51,6 +51,11 @@ impl mesa3d_desktop::Mesa3dProject for Mesa3DDesktopPanVK {
+                 "desktop-mesa3d_panvk_libgpudataproducer",
+                 "libgpudataproducer_panfrost"
+             ),
++            target!(
++                "src/gallium/targets/teflon/libteflon.so",
++                "desktop-mesa3d_panvk_libteflon",
++                "libteflon"
++            ),
+         ]);
+         self.assets_to_filter = Self::extract_assets_to_filter(&targets_to_gen, &targets_map)?;
+         SoongPackage::new(

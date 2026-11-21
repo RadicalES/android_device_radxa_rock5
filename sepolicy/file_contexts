@@ -19,6 +19,9 @@
 # process with a GPU context, apps included.
 /vendor/lib64/libui\.so                                              u:object_r:same_process_hal_file:s0
 /vendor/lib64/android\.hardware\.graphics\.allocator@[234]\.0\.so    u:object_r:same_process_hal_file:s0
+# Mesa's Teflon TFLite delegate (NPU), listed in /vendor/etc/public.libraries.txt
+# for apps to load. Its vendor dependencies are the PanVK ones above.
+/vendor/lib64/libteflon\.so                                          u:object_r:vendor_public_lib_file:s0
 
 # Health (BatteryService)
 /vendor/bin/hw/android\.hardware\.health-service\.example            u:object_r:hal_health_default_exec:s0

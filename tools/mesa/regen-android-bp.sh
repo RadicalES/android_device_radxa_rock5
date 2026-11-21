@@ -4,8 +4,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #
-# Regenerate Mesa PanVK's Soong build (Android.bp + meson_generated/) with
-# ninja-to-soong, then apply the rock5 changes (fixup-android-bp.py).
+# Regenerate Mesa's Soong build (Android.bp + meson_generated/) with
+# ninja-to-soong: PanVK, plus the Rocket NPU driver and Teflon delegate
+# (n2s-rocket-teflon.patch); then apply the rock5 changes (fixup-android-bp.py).
 #
 #   N2S_NDK_PATH=/path/to/android-ndk-r27d device/radxa/rock5/tools/mesa/regen-android-bp.sh
 #
@@ -48,7 +49,12 @@ mkdir -p "$WORK"
 if [ ! -d "$WORK/ninja-to-soong" ]; then
   git clone -q "$N2S_REPO" "$WORK/ninja-to-soong"
 fi
-git -C "$WORK/ninja-to-soong" checkout -q "$N2S_REV"
+git -C "$WORK/ninja-to-soong" checkout -q --force "$N2S_REV"
+# Our changes: the panvk project also builds Mesa's Rocket NPU driver and the
+# Teflon TFLite delegate (libteflon.so) from the same configuration, and a
+# generated header's copy steps run only if its generator succeeded ("&&", not
+# ";"), so a failing generator fails the build instead of leaving an empty header.
+git -C "$WORK/ninja-to-soong" apply "$DEV/tools/mesa/n2s-rocket-teflon.patch"
 
 echo ">> Mesa $(cat "$MESA/VERSION") at $(git -C "$MESA" log -1 --format=%h)"
 # Start from scratch so files the generator no longer emits do not linger

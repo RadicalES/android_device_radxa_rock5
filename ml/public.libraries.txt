@@ -1,0 +1,3 @@
+# Vendor libraries apps may load (System.loadLibrary / dlopen by name).
+# Mesa's Teflon TFLite delegate, which runs models on the RK3588 NPU (Rocket).
+libteflon.so

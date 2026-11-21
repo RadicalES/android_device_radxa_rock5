@@ -40,6 +40,14 @@ PRODUCT_VENDOR_PROPERTIES += \
     ro.hardware.vulkan=panfrost \
     ro.opengles.version=196608
 
+# NPU: Mesa's Teflon TFLite delegate on the Rocket driver (/dev/accel/accel0),
+# built from the same Mesa as PanVK. A vendor public library, so apps can load
+# it as a LiteRT external delegate.
+PRODUCT_PACKAGES += \
+    desktop-mesa3d_panvk_libteflon
+PRODUCT_COPY_FILES += \
+    $(COMMON_PATH)/ml/public.libraries.txt:$(TARGET_COPY_OUT_VENDOR)/etc/public.libraries.txt
+
 # No lock screen by default. A system property: set from the vendor
 # build.prop it is applied with vendor_init's permissions and refused.
 PRODUCT_SYSTEM_PROPERTIES += \
