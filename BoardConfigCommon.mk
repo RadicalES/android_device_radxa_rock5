@@ -32,6 +32,11 @@ TARGET_NO_RECOVERY := true
 BOARD_KERNEL_CMDLINE := console=tty0 console=ttyS2,1500000 earlycon no_console_suspend loglevel=4
 BOARD_KERNEL_CMDLINE += androidboot.hardware=rock5 androidboot.boot_devices=fe2c0000.mmc
 BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
+# NPU at 800 MHz while it is powered (the device tree's 200 MHz otherwise);
+# within Rockchip's OPP table for the 800 mV vdd_npu runs at. Rocket sets it
+# at runtime: a device-tree rate this high hangs boot (kernel commit
+# "accel/rocket: optionally raise the NPU clock while powered").
+BOARD_KERNEL_CMDLINE += rocket.npu_rate_mhz=800
 
 # Wi-Fi (optional, e.g. the RTL8852BE on an M.2 E-key module): a mac80211
 # driver (rtw89) that AOSP's wpa_supplicant and hostapd drive over nl80211,

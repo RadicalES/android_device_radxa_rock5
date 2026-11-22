@@ -19,7 +19,7 @@ set -euo pipefail
 # The kernel source: a commit of the fork's android-6.18 branch (v6.18.63 +
 # our patches). Pinned, so a build is reproducible; bump it to take changes.
 KERNEL_REPO=${KERNEL_REPO:-https://github.com/RadicalES/android_kernel_rockchip_rk3588.git}
-KERNEL_REV=${KERNEL_REV:-acf44239f44431580d1449f83e12f3f3419ff880}
+KERNEL_REV=${KERNEL_REV:-78c2ade936c6834af515a11492d163b32f80587f}
 AOSP=${AOSP:?set AOSP to an AOSP tree (used for clang + kernel/configs)}
 
 TOP=$(cd "$(dirname "$0")/.." && pwd)
