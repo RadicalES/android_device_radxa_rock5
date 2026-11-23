@@ -25,11 +25,14 @@ TARGET_NO_RECOVERY := true
 # tools/mkimg.sh assembles it from the kernel, DTB and ramdisk.img; the Android
 # boot.img the build still makes is not used.
 
-# Kernel log on HDMI and UART; the last console= (UART) becomes /dev/console.
-# fe2c0000.mmc is the microSD controller; it makes /dev/block/by-name/* point there
+# Kernel log on the UART only (/dev/console), not on HDMI: the display shows
+# nothing between U-Boot and the boot animation, nor at shutdown. logo.nologo
+# and vt.global_cursor_default=0 keep fbcon from drawing Tux and a cursor.
 # loglevel=4: only warnings and worse on the console, so the UART shell stays
-# usable; dmesg still has everything
-BOARD_KERNEL_CMDLINE := console=tty0 console=ttyS2,1500000 earlycon no_console_suspend loglevel=4
+# usable; dmesg still has everything.
+BOARD_KERNEL_CMDLINE := console=ttyS2,1500000 earlycon no_console_suspend loglevel=4
+BOARD_KERNEL_CMDLINE += logo.nologo vt.global_cursor_default=0
+# fe2c0000.mmc is the microSD controller; it makes /dev/block/by-name/* point there
 BOARD_KERNEL_CMDLINE += androidboot.hardware=rock5 androidboot.boot_devices=fe2c0000.mmc
 BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 # NPU at 800 MHz while it is powered (the device tree's 200 MHz otherwise);
