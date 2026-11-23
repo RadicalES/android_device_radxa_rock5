@@ -1,0 +1,20 @@
+//
+// Copyright (C) 2026 RadicalES
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+// The SD-card installer's /init (tools/mkimg.sh INSTALLER=1 packs it into
+// installer.img). Static: the installer ramdisk has no linker or libraries.
+
+cc_binary {
+    name: "rock5_installer",
+    srcs: ["installer.cpp"],
+    static_executable: true,
+    stl: "libc++_static",
+    installable: false,
+    cflags: [
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+    ],
+}

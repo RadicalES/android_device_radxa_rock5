@@ -23,6 +23,14 @@
 #   p3  vendor     ext4
 #   p4  metadata   ext4 (empty)
 #   p5  userdata   ext4 (empty), rest of the image
+#
+# INSTALLER=1 makes an installer card instead: the same image, but U-Boot's
+# default entry boots installer.img (installer/installer.cpp), which copies
+# the card to the internal storage and grows userdata to fill it.
+#   INSTALL_TARGET  sysfs path part of the target disk (default fe2e0000.mmc,
+#                   the eMMC); the copy boots from that controller
+#   INSTALLER_ARGS  extra kernel arguments for the installer, e.g.
+#                   rock5_installer.dry_run=1 or rock5_installer.countdown=5
 
 set -euo pipefail
 
@@ -37,12 +45,17 @@ done
 
 # Board settings come from the build, so they match BoardConfig*.mk
 eval "$(cd "$TOP" && build/soong/soong_ui.bash --dumpvars-mode \
-  --vars="BOARD_KERNEL_CMDLINE ROCK5_DTB ROCK5_DTBOS KERNEL_PATH" 2>/dev/null)"
+  --vars="BOARD_KERNEL_CMDLINE ROCK5_DTB ROCK5_DTBOS KERNEL_PATH TARGET_ARCH TARGET_ARCH_VARIANT TARGET_CPU_VARIANT" 2>/dev/null)"
 [ -n "${ROCK5_DTB:-}" ] && [ -n "${BOARD_KERNEL_CMDLINE:-}" ] || die "could not read board variables"
 DTB_FILE=$TOP/$KERNEL_PATH/$ROCK5_DTB
 [ -f "$DTB_FILE" ] || die "missing $DTB_FILE"
 UBOOT=${UBOOT:-$TOP/$KERNEL_PATH/u-boot-rockchip.bin}
 [ -f "$UBOOT" ] || die "missing $UBOOT"
+
+INSTALLER=${INSTALLER:-0}
+INSTALL_TARGET=${INSTALL_TARGET:-fe2e0000.mmc}
+BOOT_DEVICE=$(sed -n 's/.*androidboot\.boot_devices=\([^ ]*\).*/\1/p' <<<"$BOARD_KERNEL_CMDLINE")
+[ -n "$BOOT_DEVICE" ] || die "no androidboot.boot_devices in BOARD_KERNEL_CMDLINE"
 
 DEVICE=$(basename "$OUT")
 IMG=${IMG:-$OUT/aosp15-$DEVICE-$(date +%Y%m%d).img}
@@ -109,11 +122,60 @@ else
 fi
 sed -e "s|@DTB@|$ROCK5_DTB|" -e "s|@CMDLINE@|$BOARD_KERNEL_CMDLINE|" -e "$OVL_SED" \
   "$TOP/device/radxa/rock5/boot/extlinux.conf" > "$TMP/extlinux.conf"
+if [ "$INSTALLER" = 1 ]; then
+  echo ">> installer (target $INSTALL_TARGET)"
+  # Not installed on any partition, so built by its output path
+  INSTALLER_OUT=out/soong/.intermediates/device/radxa/rock5/installer/rock5_installer
+  INSTALLER_OUT=$INSTALLER_OUT/android_${TARGET_ARCH}_${TARGET_ARCH_VARIANT}_${TARGET_CPU_VARIANT}/rock5_installer
+  (cd "$TOP" && build/soong/soong_ui.bash --make-mode "$INSTALLER_OUT" >/dev/null) \
+    || die "building rock5_installer failed"
+  INSTALLER_BIN=$TOP/$INSTALLER_OUT
+  [ -f "$INSTALLER_BIN" ] || die "missing $INSTALLER_BIN"
+  mkdir -p "$TMP/installer-root"
+  install -m 0755 "$INSTALLER_BIN" "$TMP/installer-root/init"
+  "$TOP/out/host/linux-x86/bin/mkbootfs" "$TMP/installer-root" | gzip -9 > "$TMP/installer.img"
+  # What the installed system boots: this config, on the target's controller
+  sed "s|androidboot.boot_devices=$BOOT_DEVICE|androidboot.boot_devices=$INSTALL_TARGET|" \
+    "$TMP/extlinux.conf" > "$TMP/extlinux.conf.target"
+  # The card itself boots the installer by default; "android" still runs the
+  # system from the card
+  INSTALLER_APPEND="console=ttyS2,1500000 earlycon loglevel=4 logo.nologo vt.global_cursor_default=0"
+  INSTALLER_APPEND="$INSTALLER_APPEND rock5_installer.source=$BOOT_DEVICE rock5_installer.target=$INSTALL_TARGET"
+  INSTALLER_APPEND="$INSTALLER_APPEND ${INSTALLER_ARGS:-}"
+  # Two passes: collect the android entry, then print it as "install" first
+  awk -v append="$INSTALLER_APPEND" '
+    NR == FNR {
+      if (/^label /) grab = ($0 ~ /^label android/)
+      else if (grab && /^[ \t]/) {
+        line = $0
+        if (line ~ /^[ \t]*initrd /) line = "    initrd /installer.img"
+        if (line ~ /^[ \t]*append /) line = "    append " append
+        body[n++] = line
+      }
+      next
+    }
+    /^default / { print "default install"; next }
+    /^label / && !done {
+      print "label install"
+      for (i = 0; i < n; i++) print body[i]
+      print ""
+      done = 1
+    }
+    { print }
+  ' "$TMP/extlinux.conf" "$TMP/extlinux.conf" > "$TMP/extlinux.conf.install"
+  grep -q "^label install" "$TMP/extlinux.conf.install" || die "installer extlinux.conf"
+fi
 mkfs.fat -F 32 -n BOOT -C "$TMP/boot.vfat" $((BOOT * 1024)) >/dev/null
 mmd -i "$TMP/boot.vfat" ::extlinux ::overlays
 mcopy -i "$TMP/boot.vfat" "$OUT/kernel" ::Image
 mcopy -i "$TMP/boot.vfat" "$DTB_FILE" "$OUT/ramdisk.img" ::
-mcopy -i "$TMP/boot.vfat" "$TMP/extlinux.conf" ::extlinux/extlinux.conf
+if [ "$INSTALLER" = 1 ]; then
+  mcopy -i "$TMP/boot.vfat" "$TMP/extlinux.conf.install" ::extlinux/extlinux.conf
+  mcopy -i "$TMP/boot.vfat" "$TMP/extlinux.conf.target" ::extlinux/extlinux.conf.target
+  mcopy -i "$TMP/boot.vfat" "$TMP/installer.img" ::installer.img
+else
+  mcopy -i "$TMP/boot.vfat" "$TMP/extlinux.conf" ::extlinux/extlinux.conf
+fi
 if [ -n "$FDTOVERLAYS" ]; then
   mcopy -i "$TMP/boot.vfat" "$TMP"/overlays/*.dtbo ::overlays/
 fi
