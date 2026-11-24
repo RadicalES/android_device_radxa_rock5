@@ -56,11 +56,15 @@ bootloader/build-uboot.sh   mainline U-Boot + TF-A BL31 (+ rkbin DDR blob) -> u-
 kernel/build-kernel.sh      mainline LTS kernel built with AOSP clang
 kernel/rock5.config         board config fragment, merged over defconfig + AOSP android-base.config
 docs/BUILDING.md            full build recipe, prebuilt updates, Mesa regeneration
+docs/INSTALLER.md           installer SD card: make, write, install to the eMMC
 tools/update-prebuilts.sh   rebuild kernel and/or U-Boot into device/radxa/rock5-kernel
 tools/mesa/                 regenerate Mesa's Android.bp (ninja-to-soong) and apply the rock5 fixups
 tools/mksdcard-kernel-test.sh  SD image with U-Boot + kernel + DTB only, for kernel bring-up
 tools/mkimg.sh              full SD image from an Android build (no sudo): U-Boot + boot/system/vendor/metadata/userdata;
                             boot = FAT {Image, DTB, ramdisk.img, extlinux/extlinux.conf}
+tools/mkinstaller.sh        installer SD image: boots, copies the system to the eMMC (docs/INSTALLER.md)
+tools/flash-card.sh         write an image to an SD card, with checks (sudo)
+installer/                  the installer (/init of the installer ramdisk)
 ```
 
 The fstab mounts by GPT partition name, and `androidboot.boot_devices` says which controller holds them

@@ -31,6 +31,9 @@
 #                   the eMMC); the copy boots from that controller
 #   INSTALLER_ARGS  extra kernel arguments for the installer, e.g.
 #                   rock5_installer.dry_run=1 or rock5_installer.countdown=5
+# The image is 14 GiB (16 GB card), or the smallest that works (about 4.6 GiB,
+# 8 GB card) with INSTALLER=1; IMG_SIZE_MIB overrides it. tools/mkinstaller.sh
+# wraps INSTALLER=1, docs/INSTALLER.md explains the installer.
 
 set -euo pipefail
 
@@ -59,7 +62,6 @@ BOOT_DEVICE=$(sed -n 's/.*androidboot\.boot_devices=\([^ ]*\).*/\1/p' <<<"$BOARD
 
 DEVICE=$(basename "$OUT")
 IMG=${IMG:-$OUT/aosp15-$DEVICE-$(date +%Y%m%d).img}
-IMG_SIZE_MIB=${IMG_SIZE_MIB:-14336}   # fits a 16 GB card
 
 # Sizes in MiB; must match BoardConfigCommon.mk
 BOOT_START=32
@@ -80,6 +82,13 @@ SYSTEM_START=$((BOOT_START + BOOT))
 VENDOR_START=$((SYSTEM_START + SYSTEM))
 METADATA_START=$((VENDOR_START + VENDOR))
 USERDATA_START=$((METADATA_START + METADATA))
+# A normal card fits a 16 GB card. An installer card copies only what comes
+# before userdata, so it gets the smallest image (fits an 8 GB card).
+if [ "$INSTALLER" = 1 ]; then
+  IMG_SIZE_MIB=${IMG_SIZE_MIB:-$((USERDATA_START + 1025 + 1))}
+else
+  IMG_SIZE_MIB=${IMG_SIZE_MIB:-14336}
+fi
 USERDATA=$((IMG_SIZE_MIB - USERDATA_START - 1))   # 1 MiB left for the backup GPT
 [ "$USERDATA" -gt 1024 ] || die "image too small for userdata"
 

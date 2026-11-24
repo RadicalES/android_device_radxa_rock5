@@ -60,8 +60,11 @@ taking U-Boot from `device/radxa/rock5-kernel` (override with `UBOOT=`) and the 
 ## 4. Flash and debug
 
 ```sh
-sudo dd if=out/target/product/rock5b/aosp15-rock5b-<date>.img of=/dev/sdX bs=4M conv=fsync status=progress
+sudo device/radxa/rock5/tools/flash-card.sh out/target/product/rock5b/aosp15-rock5b-<date>.img
 ```
+
+`flash-card.sh` only writes to USB or removable disks, checks the size, and asks first.
+For an installer card that puts the system on the eMMC, see [INSTALLER.md](INSTALLER.md).
 
 Copy with `cp --sparse=always` when moving images around, or each copy takes the full 14 GiB.
 
