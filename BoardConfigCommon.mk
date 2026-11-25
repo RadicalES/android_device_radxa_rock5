@@ -34,7 +34,6 @@ BOARD_KERNEL_CMDLINE := console=ttyS2,1500000 earlycon no_console_suspend loglev
 BOARD_KERNEL_CMDLINE += logo.nologo vt.global_cursor_default=0
 # fe2c0000.mmc is the microSD controller; it makes /dev/block/by-name/* point there
 BOARD_KERNEL_CMDLINE += androidboot.hardware=rock5 androidboot.boot_devices=fe2c0000.mmc
-BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 # NPU at 800 MHz while it is powered (the device tree's 200 MHz otherwise);
 # within Rockchip's OPP table for the 800 mV vdd_npu runs at. Rocket sets it
 # at runtime: a device-tree rate this high hangs boot (kernel commit
@@ -73,7 +72,7 @@ TARGET_BOOTLOADER_BOARD_NAME := rk3588
 # Properties
 TARGET_VENDOR_PROP += $(COMMON_PATH)/vendor.prop
 
-# SELinux (still permissive via androidboot.selinux; labels are needed regardless)
+# SELinux: enforcing, as stock AOSP (user builds ignore androidboot.selinux)
 BOARD_VENDOR_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy
 # Lights HAL for HDMI monitors (DDC/CI brightness)
 BOARD_VENDOR_SEPOLICY_DIRS += hardware/radicales/lights/ddc/sepolicy

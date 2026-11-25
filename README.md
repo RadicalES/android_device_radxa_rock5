@@ -49,7 +49,7 @@ boot/extlinux.conf          template U-Boot reads; @DTB@ and @CMDLINE@ are fille
 ramdisk/                    fstab.rock5, init.rock5.rc, ueventd.rock5.rc (shared, androidboot.hardware=rock5)
 manifest.xml, vendor.prop
 audio/                      audio policy for the reference AIDL audio HAL
-sepolicy/                   vendor SELinux policy: file labels for the HALs (boot is still permissive)
+sepolicy/                   vendor SELinux policy for the HALs (enforcing)
 overlay/                    resource overlays (settings defaults: no screen timeout)
 rock5b/                     ROCK 5B: BoardConfig.mk (picks the DTB), device.mk, aosp_rock5b.mk
 bootloader/build-uboot.sh   mainline U-Boot + TF-A BL31 (+ rkbin DDR blob) -> u-boot-rockchip.bin
